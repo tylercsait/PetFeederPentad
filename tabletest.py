@@ -53,6 +53,7 @@ def update_pet_feedings (rfid, feeding_date, feedings_today):
     if feedings_today <= pet["MaxFeedings"]:
         pet["FeedingsToday"] += 1
         pet["LastTimeFed"] = datetime.now().time()
+        table_client.update_entity(entity = pet, mode=UpdateMode.MERGE)
     else:
         print("TOO MUCH FEEDING")
 
