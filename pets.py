@@ -13,6 +13,25 @@ from datetime import date, datetime
 }
 """
 
+# Getters and setters
+def get_last_time_fed(rfid, feeding_date):
+    try:
+        pet = table_client.get_entity(partition_key=rfid, row_key=feeding_date)
+        return pet["LastTimeFed"]
+    except Exception as e:
+        print(f"Error retrieving last time fed for PartitionKey '{rfid}' and RowKey '{feeding_date}': {e}")
+        return None
+
+
+def get_portion_size(rfid, feeding_date):
+    try:
+        pet = table_client.get_entity(partition_key=rfid, row_key=feeding_date)
+        return pet["PortionSize"]
+    except Exception as e:
+        print(f"Error retrieving PortionSize for PartitionKey '{rfid}' and RowKey '{feeding_date}': {e}")
+        return None
+
+
 def get_connection_str(file_path):
     with open(file_path, 'r') as file:
         return file.read().strip()
@@ -32,6 +51,7 @@ def add_pet(rfid, portion_size, max_feedings_per_day):
     table_client.create_entity(entity)
     print(f"Added entity: {entity}")
 
+
 # def update_pet(rfid, the_date, portion_size, max_feedings_per_day, feedings_today):
 #     entity = {
 #         "PartitionKey": str(rfid),  # Ensure rfid is a string
@@ -42,11 +62,13 @@ def add_pet(rfid, portion_size, max_feedings_per_day):
 #     }
 #     table_client.update_entity(entity=entity, mode=UpdateMode.REPLACE)
 
+
 def update_pet_portion_size (rfid, feeding_date, portion_size = None):
     pet = table_client.get_entity(partition_key = rfid, row_key = feeding_date)
     if portion_size is not None:
         pet["PortionSize"] = portion_size
     table_client.update_entity(entity=pet, mode=UpdateMode.MERGE)
+
 
 def update_pet_feedings (rfid, feeding_date):
     pet = table_client.get_entity(partition_key=rfid, row_key=feeding_date)
@@ -57,10 +79,12 @@ def update_pet_feedings (rfid, feeding_date):
     else:
         print("TOO MUCH FEEDING")
 
+
 def list_all_pets():
     pets = table_client.list_entities()
     for pet in pets:
         print(f"Listing '{pet}'")
+
 
 def delete_pet (rfid, feeding_date):
     try:
@@ -69,11 +93,11 @@ def delete_pet (rfid, feeding_date):
     except Exception as e:
         print(f"Failed to delete pet with PartitionKey '{rfid}' and RowKey '{feeding_date}'")
 
+
 def delete_all_pets():
     pets = table_client.list_entities()
     for pet in pets:
         delete_pet(pet["PartitionKey"],pet["RowKey"])
-
 
 
 # initialize connection to azure cloud
