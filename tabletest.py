@@ -1,5 +1,5 @@
 from azure.data.tables import TableServiceClient, TableClient, UpdateMode
-from datetime import date
+from datetime import date, datetime
 
 # Table structure
 """
@@ -18,11 +18,11 @@ def get_connection_str(file_path):
         return file.read().strip()
 
 
-def add_pet(rfid, last_time_fed, portion_size, max_feedings_per_day):
+def add_pet(rfid, portion_size, max_feedings_per_day):
     entity = {
         "PartitionKey": str(rfid),  # Ensure rfid is a string
         "RowKey": todaydate,  # Use today's date
-        "LastTimeFed" : last_time_fed,
+        "LastTimeFed" : 0,
         "PortionSize": portion_size,
         "MaxFeedings": max_feedings_per_day,
         "FeedingsToday": 0,
@@ -52,7 +52,7 @@ def update_pet_feedings (rfid, feeding_date, feedings_today):
     pet = table_client.get_entity(partition_key=rfid, row_key=feeding_date)
     if feedings_today <= pet["MaxFeedings"]:
         pet["FeedingsToday"] += 1
-        pet[""]
+        pet["LastTimeFed"] = datetime.now().time()
     else:
         print("TOO MUCH FEEDING")
 
