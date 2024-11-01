@@ -43,10 +43,10 @@ def add_pet(rfid, portion_size, max_feedings_per_day):
 #     table_client.update_entity(entity=entity, mode=UpdateMode.REPLACE)
 
 def update_pet_portion_size (rfid, feeding_date, portion_size = None):
-    entity = table_client.get_entity(partition_key = rfid, row_key = feeding_date)
+    pet = table_client.get_entity(partition_key = rfid, row_key = feeding_date)
     if portion_size is not None:
-        entity["PortionSize"] = portion_size
-    table_client.update_entity(entity=entity, mode=UpdateMode.MERGE)
+        pet["PortionSize"] = portion_size
+    table_client.update_entity(entity=pet, mode=UpdateMode.MERGE)
 
 def update_pet_feedings (rfid, feeding_date, feedings_today):
     pet = table_client.get_entity(partition_key=rfid, row_key=feeding_date)
