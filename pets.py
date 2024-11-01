@@ -63,8 +63,11 @@ def list_all_pets():
         print(f"Listing '{pet}'")
 
 def delete_pet (rfid, feeding_date):
-    table_client.delete_entity(partition_key = rfid, row_key = feeding_date)
-    print(f"Deleted entity with PartitionKey '{rfid}' and RowKey '{feeding_date}'")
+    try:
+        table_client.delete_entity(partition_key = rfid, row_key = feeding_date)
+        print(f"Deleted entity with PartitionKey '{rfid}' and RowKey '{feeding_date}'")
+    except Exception as e:
+        print(f"Failed to delete pet with PartitionKey '{rfid}' and RowKey '{feeding_date}'")
 
 def delete_all_pets():
     pets = table_client.list_entities()
