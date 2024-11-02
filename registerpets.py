@@ -9,6 +9,7 @@ def menu():
          f"2. Remove pet\n"
          f"3. Exit")
 
+
 def main():
     while True:
         menu()
@@ -23,22 +24,24 @@ def main():
 
                 # check to see if exists in pets
                 if not pets.check_pet_exists(rfid):
-                   while True:
-                       max_feedings = input("Enter the number of feedings per day: ")
-                       if max_feedings.isdigit():
-                           max_feedings = int(max_feedings)
-                           break
-                       else:
-                           print("Invalid input. Please enter an integer.")
-                   while True:
-                       portion_size = input("Enter the portion size: ")
-                       if portion_size.isdigit():
-                           portion_size = int(portion_size)
-                           break
-                       else:
-                           print("Invalid input. Please enter an integer.")
-                    pets.add_pet(rfid,portion_size,max_feedings)
-                else: # if pet is already in the table, return to the menu
+                    while True:
+                        max_feedings = input("Enter the number of feedings per day: ")
+                        if max_feedings.isdigit():
+                            max_feedings = int(max_feedings)
+                            break
+                        else:
+                            print("Invalid input. Please enter an integer.")
+
+                    while True:
+                        portion_size = input("Enter the portion size: ")
+                        if portion_size.isdigit():
+                            portion_size = int(portion_size)
+                            break
+                        else:
+                            print("Invalid input. Please enter an integer.")
+
+                    pets.add_pet(rfid, portion_size, max_feedings)
+                else:  # if pet is already in the table, return to the menu
                     print("That RFID is already registered. Please choose another option.")
 
             finally:
@@ -55,14 +58,19 @@ def main():
                 # If the pet exists, remove all entries of it.
                 if pets.check_pet_exists(rfid):
                     pets.delete_pet_by_rfid(rfid)
-                else:  # if pet is already in the table, return to the menu
+                else:  # if pet is not in the table, return to the menu
                     print("That RFID tag is not registered. Please choose another option.")
             finally:
                 GPIO.cleanup()
+
         elif choice == '3':
+            print("Exiting...")
             break
+
         else:
             print(f"\nInvalid choice. Please try again.\n")
+
+
 
 if __name__ == "__main__":
     print("This program removes or adds a pet to the app. You need to use the RFID tags on the RFID sensor.")
