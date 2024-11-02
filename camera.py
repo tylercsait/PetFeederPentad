@@ -1,16 +1,14 @@
-import libcamera
+from picamera2 import Picamera2
 
-def take_jpg():
-    with libcamera.PyLibCamera() as camera:
-        camera.configure()
-        camera.start()
+def capture_image():
+    picam2 = Picamera2()
+    config = picam2.create_still_configuration()
+    picam2.configure(config)
+    picam2.start()
+    picam2.capture_file('/home/group3/test.jpg')
+    picam2.stop()
+    print("Image captured and saved as '/home/group3/test.jpg'")
 
-        # Capture a JPEG image
-        frame = camera.capture(format='jpeg')
+if __name__ == "__main__":
+    capture_image()
 
-        # Save the image to a file
-        with open('test.jpeg', 'wb') as file:
-            file.write(frame)
-        print("Image captured and saved as '/home/group3/test.jpeg'")
-
-        camera.stop()
