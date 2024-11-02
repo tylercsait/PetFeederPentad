@@ -4,6 +4,8 @@ Collaborators: Tsz Hei Chan, Ronghao Liu, Tyler Chow, Hung-Ju Ke, Nabil Mekhalfa
 Last Modified: 11/1/2024
 """
 import registerpets
+import camera
+import fileupload
 
 def main_menu():
     print(f"\nWelcome to the pet feeder program. Please choose an option:\n"
@@ -18,7 +20,8 @@ def main():
         if choice == '1':
             registerpets.main()
         elif choice == '2':#take picture, then use fileupload.upload_blob()
-            break
+            camera.take_jpg()
+            fileupload.upload_blob('/home/group3/test.jpg', 'test.jpg')
         elif choice == '3':
             break
         else:
