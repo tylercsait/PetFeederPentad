@@ -15,11 +15,11 @@ def main():
     while True:
         main_menu()
         choice = input(f"Please input an option: ")
-        if choice == 1:
+        if choice == '1':
             registerpets.main()
-        elif choice == 2:#take picture, then use fileupload.upload_blob()
+        elif choice == '2':#take picture, then use fileupload.upload_blob()
             break
-        elif choice == 3:
+        elif choice == '3':
             break
         else:
             print(f"{choice} is an invalid input. Please enter a valid option.")
