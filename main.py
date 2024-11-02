@@ -20,7 +20,7 @@ def main():
         if choice == '1':
             registerpets.main()
         elif choice == '2':#take picture, then use fileupload.upload_blob()
-            camera.take_jpg()
+            camera.capture_image()
             fileupload.upload_blob('/home/group3/test.jpg', 'test.jpg')
         elif choice == '3':
             break
