@@ -16,8 +16,10 @@ container_name = "pentadcontainer"
 blob_service_client = BlobServiceClient.from_connection_string(connection_string)
 container_client = blob_service_client.get_container_client(container_name)
 
-def upload_blob(file_path, file_in_blob_name):
+def upload_jpg_blob(file_path, file_in_blob_name):
     blob_client = container_client.get_blob_client(file_in_blob_name)
+
+    container_client.get_blob_client(file_in_blob_name)  # Set the content type to image/jpeg content_settings = BlobContentSettings(content_type="image/jpeg"
 
     with open(file_path, "rb") as data:
         blob_client.upload_blob(data, overwrite=True)
