@@ -3,73 +3,85 @@ import pets
 from mfrc522 import SimpleMFRC522
 
 
-def menu():
-   print(f"Choose an option.\n"
-         f"1. Add pet\n"
-         f"2. Remove pet\n"
-         f"3. Exit")
+def menu_registered():
+   print(f"This pet is registered. Please choose an option."
+         f"1. Update number of feedings per day."
+         f"2. Update portion size."
+         f"3. Unregister pet.")
+
+def menu_not_registered():
+    print(f"This pet is not registered. Would you like to register this pet?"
+          f"1. Yes, register this pet."
+          f"2. input any key to exit")
+
+def input_max_feedings():
+    while True:
+        max_feedings = input("Enter the number of feedings per day: ")
+        if max_feedings.isdigit():
+            max_feedings = int(max_feedings)
+            break
+        else:
+            print("Invalid input. Please enter an integer.")
+    return max_feedings
+
+
+def input_portion_size():
+    while True:
+        portion_size = input("Portion size: ")
+        if portion_size.isdigit():
+            portion_size = int(portion_size)
+            break
+        else:
+            print("Invalid input. Please enter an integer.")
+    return portion_size
 
 
 def main():
-    while True:
-        menu()
-        choice = input("Enter your choice (number): ")
+    reader = SimpleMFRC522()
+    try:
+        print("Please place the RFID tag near the sensor.")
+        rfid, text = reader.read()
 
-        # Add pet
-        if choice == '1':
-            reader = SimpleMFRC522()
-            try:
-                print("Please place the RFID tag near the sensor.")
-                rfid, text = reader.read()
+        # Pet is already registered. Ask to update feedings, portion size, or delete
+        if pets.check_pet_exists(rfid):
+            while True:
+                menu_registered()
+                choice = input("Please choose an option: ")
 
-                # check to see if exists in pets
-                if not pets.check_pet_exists(rfid):
-                    while True:
-                        max_feedings = input("Enter the number of feedings per day: ")
-                        if max_feedings.isdigit():
-                            max_feedings = int(max_feedings)
-                            break
-                        else:
-                            print("Invalid input. Please enter an integer.")
+                if choice == '1':
+                    max_feedings = input_max_feedings()
+                    print(f"The number of feedings per day has been updated to '{max_feedings}'")
+                    pets.update_pet_feedings_today(rfid, max_feedings)
+                    break
 
-                    while True:
-                        portion_size = input("Enter the portion size: ")
-                        if portion_size.isdigit():
-                            portion_size = int(portion_size)
-                            break
-                        else:
-                            print("Invalid input. Please enter an integer.")
+                elif choice == '2':
+                    portion_size = input_portion_size()
+                    print(f"The portion size has been updated to '{portion_size}'")
+                    pets.update_pet_portion_size(rfid, portion_size)
+                    break
 
-                    pets.add_pet(rfid, portion_size, max_feedings)
-                else:  # if pet is already in the table, return to the menu
-                    print("That RFID is already registered. Please choose another option.")
-
-            finally:
-                GPIO.cleanup()
-
-        # Remove Pet
-        elif choice == '2':
-            reader = SimpleMFRC522()
-            try:
-                print("Please place the RFID tag near the sensor.")
-                rfid, text = reader.read()
-
-                # check to see if exists in pets
-                # If the pet exists, remove all entries of it.
-                if pets.check_pet_exists(rfid):
+                elif choice == '3':
+                    print(f"Unregistering pet UID '{rfid}'.")
                     pets.delete_pet_by_rfid(rfid)
-                else:  # if pet is not in the table, return to the menu
-                    print("That RFID tag is not registered. Please choose another option.")
-            finally:
-                GPIO.cleanup()
+                    break
 
-        elif choice == '3':
-            print("Exiting...")
-            break
+                else:
+                    print(f"Invalid input. Please enter a valid option.")
 
-        else:
-            print(f"\nInvalid choice. Please try again.\n")
+        # RFID is not registered. Add pet to the table
+        elif not pets.check_pet_exists(rfid):
+            menu_not_registered()
+            choice = input("Please choose an option: ")
 
+            if choice == '1':
+                print("We will register your pet. We will need some information.")
+                max_feedings = input_max_feedings()
+                portion_size = input_portion_size()
+                pets.add_pet(rfid,portion_size, max_feedings)
+                print("Thank you, we have registered your pet.")
+
+    finally:
+        GPIO.cleanup()
 
 
 if __name__ == "__main__":
