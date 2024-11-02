@@ -37,6 +37,14 @@ def get_connection_str(file_path):
         return file.read().strip()
 
 
+def check_pet_exists(rfid):
+    # Query entities with the specified PartitionKey
+    pet = table_client.query_entities(f"PartitionKey eq '{rfid}'")
+
+    # Return True if any entities are found, else False
+    return any(pet)
+
+
 def add_pet(rfid, portion_size, max_feedings_per_day):
     entity = {
         "PartitionKey": str(rfid),  # Ensure rfid is a string
@@ -85,19 +93,23 @@ def list_all_pets():
     for pet in pets:
         print(f"Listing '{pet}'")
 
+def delete_pet_by_rfid(rfid):
+    pets = table_client.query_entities(f"PartitionKey eq '{rfid}'")
+    for pet in pets:
+        table_client.delete_entity(partition_key=pet["PartitionKey"], row_key = pet["RowKey"])
 
-def delete_pet (rfid, feeding_date):
+def delete_entry (rfid, feeding_date):
     try:
         table_client.delete_entity(partition_key = rfid, row_key = feeding_date)
         print(f"Deleted entity with PartitionKey '{rfid}' and RowKey '{feeding_date}'")
     except Exception as e:
-        print(f"Failed to delete pet with PartitionKey '{rfid}' and RowKey '{feeding_date}'")
+        print(f"Failed to delete pet with PartitionKey '{rfid}' and RowKey '{feeding_date}' exception '{e}'")
 
 
 def delete_all_pets():
     pets = table_client.list_entities()
     for pet in pets:
-        delete_pet(pet["PartitionKey"],pet["RowKey"])
+        delete_entry(pet["PartitionKey"], pet["RowKey"])
 
 
 # initialize connection to azure cloud
