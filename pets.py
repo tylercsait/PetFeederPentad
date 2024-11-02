@@ -71,14 +71,20 @@ def add_pet(rfid, portion_size, max_feedings_per_day):
 #     table_client.update_entity(entity=entity, mode=UpdateMode.REPLACE)
 
 
-def update_pet_portion_size (rfid, feeding_date, portion_size = None):
-    pet = table_client.get_entity(partition_key = rfid, row_key = feeding_date)
-    if portion_size is not None:
-        pet["PortionSize"] = portion_size
-    table_client.update_entity(entity=pet, mode=UpdateMode.MERGE)
+def update_pet_portion_size (rfid, new_portion_size = None):
+    pets = table_client.query_entities(f"PartitionKey eq '{rfid}'")
+    for pet in pets:
+        pet["PortionSize"] = new_portion_size
+        table_client.update_entity(entity=pet, mode=UpdateMode.MERGE)
 
+def update_pet_max_feedings(rfid, new_max_feedings):
+    pets = table_client.query_entities(f"PartitionKey eq '{rfid}'")
+    for pet in pets:
+        pet["MaxFeedings"] = new_max_feedings
+        table_client.update_entity(entity=pet, mode=UpdateMode.MERGE)
 
-def update_pet_feedings (rfid, feeding_date):
+# changes the number of feedings today
+def update_pet_feedings_today (rfid, feeding_date):
     pet = table_client.get_entity(partition_key=rfid, row_key=feeding_date)
     if pet["FeedingsToday"] < pet["MaxFeedings"]:
         pet["FeedingsToday"] += 1
