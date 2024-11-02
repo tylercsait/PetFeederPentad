@@ -24,3 +24,4 @@ def main():
         else:
             print("invalid input. Please enter a valid option.")
 
+main()
