@@ -1,8 +1,8 @@
+"""
+This file contains functions to upload image and video files to azure storage.
+"""
 from azure.storage.blob import BlobServiceClient, ContentSettings
 
-'''
-The purpose of this file is to upload image and video files to azure storage
-'''
 
 def get_connection_str(file_path):
     with open(file_path, 'r') as file:
