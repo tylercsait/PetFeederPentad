@@ -4,12 +4,12 @@ from datetime import date, datetime
 # Table structure
 """
 {
-    PartitionKey (rfid)
-    RowKey (dd-mm-yyyy)
-    LastTimeFed
-    portion_size
-    max_feedings_per_day
-    feedings_today
+    PartitionKey : rfid
+    RowKey : dd-mm-yyyy
+    LastTimeFed : last_time_fed
+    PortionSize: portion_size
+    MaxFeedings: max_feedings_per_day
+    FeedingsToday : feedings_today
 }
 """
 

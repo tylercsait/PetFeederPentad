@@ -4,15 +4,15 @@ from mfrc522 import SimpleMFRC522
 
 
 def menu_registered():
-   print(f"This pet is registered. Please choose an option."
-         f"1. Update number of feedings per day."
-         f"2. Update portion size."
-         f"3. Unregister pet.")
+   print(f"This pet is registered. Please choose an option\n"
+         f"1. Update number of feedings per day.\n"
+         f"2. Update portion size.\n"
+         f"3. Unregister pet.\n")
 
 def menu_not_registered():
-    print(f"This pet is not registered. Would you like to register this pet?"
-          f"1. Yes, register this pet."
-          f"2. input any key to exit")
+    print(f"This pet is not registered. Would you like to register this pet?\n"
+          f"1. Yes, register this pet.\n"
+          f"2. input any key to exit\n")
 
 def input_max_feedings():
     while True:
