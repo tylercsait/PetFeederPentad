@@ -1,3 +1,6 @@
+"""
+This program uses the REST api to control the petfeeder
+"""
 import requests
 
 # Home Assistant API URL
@@ -12,13 +15,16 @@ def get_connection_str(file_path):
 
 token = get_connection_str("token.txt")
 
-portion_size = 3
+
 # Headers
 headers = {
     "Authorization": f"Bearer {token}",
     "Content-Type": "application/json"
 }
 
+def set_portion_size():
+    portion_size =
+portion_size = 1
 data = {
     "entity_id": f"{entity_id}",
     "value": portion_size
