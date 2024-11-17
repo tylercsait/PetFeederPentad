@@ -41,7 +41,7 @@ def mysql_connection():
     finally:
         close_connection(connection, cursor)
 
-def create_table(cursor, table_name, create_query):
+def __create_table(cursor, table_name, create_query):
     cursor.execute(f"DROP TABLE IF EXISTS {table_name};")
     print(f"Finished dropping {table_name} table (if existed).")
     cursor.execute(create_query)
@@ -63,7 +63,7 @@ def create_pets_table(cursor):
         portions_per_feeding INTEGER
     );
     """
-    create_table(cursor, "pets", create_query)
+    __create_table(cursor, "pets", create_query)
 
 def create_history_table(cursor):
     create_query = """
@@ -74,7 +74,7 @@ def create_history_table(cursor):
         leftover_portions INTEGER
     );
     """
-    create_table(cursor, "history", create_query)
+    __create_table(cursor, "history", create_query)
 
 def get_last_time_fed(cursor, rfid):
     return get_column_value(cursor, "history", "last_time_fed", rfid)
@@ -93,7 +93,6 @@ def get_max_portions_day(cursor, rfid):
 
 def get_portion_per_feeding(cursor, rfid):
     return get_column_value(cursor, "pets", "portions_per_feeding", rfid)
-
 
 
 def check_pet_exists(cursor, rfid):
@@ -122,6 +121,9 @@ def update_pet_value(cursor, rfid, column, new_value):
     cursor.execute(update_query, (new_value, rfid))
     print(f"Updated {column} for", cursor.rowcount, "row(s).")
 
+def update_pet_name(cursor, rfid, new_name):
+    update_pet_value(cursor, rfid, "rfid_text", new_name)
+
 def update_pet_portion_size(cursor, rfid, new_portion_size):
     update_pet_value(cursor, rfid, "portions_per_feeding", new_portion_size)
 
@@ -131,11 +133,19 @@ def update_pet_max_feedings(cursor, rfid, new_max_feedings):
 def update_pet_feedings_today(cursor, rfid, new_feedings_today):
     update_pet_value(cursor, rfid, "max_portions_day", new_feedings_today)
 
+def update_history_value(cursor, rfid, column, new_value):
+    update_query = f"UPDATE history SET {column} = %s WHERE rfid = %s"
+    cursor.execute(update_query, (new_value, rfid))
+    print(f"Updated {column} for", cursor.rowcount, "row(s).")
+
+def update_history_last_time_fed(cursor, rfid, new_last_fed):
+    update_history_value(cursor, rfid, "last_time_fed", new_last_fed)
+
+def update_history_leftover_portions(cursor, rfid, new_last_fed):
+    update_history_value(cursor, rfid, "leftover_portions", new_last_fed)
+
 def list_all_pets(cursor):
-    query = "SELECT * FROM pets"
-    cursor.execute(query)
-    rows = cursor.fetchall()
-    return rows
+    return view_table(cursor, "pets")
 
 def view_table(cursor, db_name):
     query = f"SELECT * FROM {db_name}"
