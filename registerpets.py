@@ -65,7 +65,7 @@ def process_pet_input(cursor, rfid, rfid_text):
     #db_utils.create_pets_table(cursor)
 
     # If the Pet is already registered. Ask to update feedings, portion size, or delete
-    if db_utils.check_pet_exists(cursor, rfid):
+    if db_utils.check_pet_exists(cursor, rfid, "pets"):
         while True:
             menu_registered()
             choice = input("Please choose an option: ")
@@ -97,7 +97,7 @@ def process_pet_input(cursor, rfid, rfid_text):
                 print(f"Invalid input. Please enter a valid option.")
 
         # RFID is not registered. Add pet to the table
-    elif not db_utils.check_pet_exists(cursor, rfid):
+    elif not db_utils.check_pet_exists(cursor, rfid, "pets"):
         menu_not_registered()
         choice = input("Please choose an option: ")
 
