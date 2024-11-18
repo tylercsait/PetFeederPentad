@@ -47,7 +47,7 @@ def __create_table(cursor, table_name, create_query):
     cursor.execute(create_query)
     print(f"Finished creating {table_name} table.")
 
-def get_column_value(cursor, table, column, rfid):
+def __get_column_value(cursor, table, column, rfid):
     query = f"SELECT {column} FROM {table} WHERE rfid = %s"
     cursor.execute(query, (rfid,))
     result = cursor.fetchone()
@@ -71,32 +71,51 @@ def create_history_table(cursor):
         rfid VARCHAR(50) PRIMARY KEY,
         date DATE,
         last_time_fed TIME,
+        feedings_today INTEGER,
+        portions_eaten_today INTEGER,
         leftover_portions INTEGER
     );
     """
     __create_table(cursor, "history", create_query)
 
+def initialize_tables(cursor):
+    create_pets_table(cursor)
+    create_history_table(cursor)
+
+def get_date_fed(cursor,rfid):
+    return __get_column_value(cursor, "history", "date", rfid)
+
 def get_last_time_fed(cursor, rfid):
-    return get_column_value(cursor, "history", "last_time_fed", rfid)
+    return __get_column_value(cursor, "history", "last_time_fed", rfid)
+
+def get_feedings_today(cursor, rfid):
+    return __get_column_value(cursor, "history", "feedings_today", rfid)
+
+def get_portions_eaten_today(cursor, rfid):
+    return __get_column_value(cursor, "history", "portions_eaten_today", rfid)
 
 def get_leftover_portions(cursor, rfid):
-    return get_column_value(cursor, "history", "leftover_portions", rfid)
+    return __get_column_value(cursor, "history", "leftover_portions", rfid)
 
 def get_rfid_text(cursor, rfid):
-    return get_column_value(cursor, "pets", "rfid_text", rfid)
+    return __get_column_value(cursor, "pets", "rfid_text", rfid)
 
 def get_max_feedings_day(cursor, rfid):
-    return get_column_value(cursor, "pets", "max_feedings_day", rfid)
+    return __get_column_value(cursor, "pets", "max_feedings_day", rfid)
 
 def get_max_portions_day(cursor, rfid):
-    return get_column_value(cursor, "pets", "max_portions_day", rfid)
+    return __get_column_value(cursor, "pets", "max_portions_day", rfid)
 
 def get_portion_per_feeding(cursor, rfid):
-    return get_column_value(cursor, "pets", "portions_per_feeding", rfid)
+    return __get_column_value(cursor, "pets", "portions_per_feeding", rfid)
 
 
-def check_pet_exists(cursor, rfid):
-    query = "SELECT 1 FROM pets WHERE rfid = %s"
+ALLOWED_TABLES = {'pets', 'history'}
+
+def check_pet_exists(cursor, rfid, db):
+    if db not in ALLOWED_TABLES:
+        raise ValueError(f"Invalid table name: {db}")
+    query = "SELECT 1 FROM {} WHERE rfid = %s".format(db)
     cursor.execute(query, (rfid,))
     return cursor.fetchone() is not None
 
@@ -108,13 +127,18 @@ def add_pet(cursor, rfid, rfid_text, max_feedings_day, max_portions_day, portion
     cursor.execute(insert_query, (rfid, rfid_text, max_feedings_day, max_portions_day, portions_per_feeding))
     print("Inserted", cursor.rowcount, "row(s) of data.")
 
-def add_history(cursor, rfid, last_time_fed, leftover_portions):
+    __init_history(cursor, rfid)
+
+def add_history(cursor, rfid, last_time_fed, feedings_today, portions_eaten_today, leftover_portions):
     insert_query = """
-        INSERT INTO history (rfid, date, last_time_fed, leftover_portions)
-        VALUES (%s, CURDATE(), %s, %s)
+        INSERT INTO history (rfid, date, last_time_fed, feedings_today, portions_eaten_today, leftover_portions)
+        VALUES (%s, CURDATE(), %s, %s, %s, %s)
     """
-    cursor.execute(insert_query, (rfid, last_time_fed, leftover_portions))
+    cursor.execute(insert_query, (rfid, last_time_fed,feedings_today, portions_eaten_today, leftover_portions))
     print("Inserted", cursor.rowcount, "row(s) into history.")
+
+def __init_history(cursor, rfid):
+    add_history(cursor, rfid, -1, -1, -1, -1)
 
 def update_pet_value(cursor, rfid, column, new_value):
     update_query = f"UPDATE pets SET {column} = %s WHERE rfid = %s"
@@ -141,8 +165,22 @@ def update_history_value(cursor, rfid, column, new_value):
 def update_history_last_time_fed(cursor, rfid, new_last_fed):
     update_history_value(cursor, rfid, "last_time_fed", new_last_fed)
 
-def update_history_leftover_portions(cursor, rfid, new_last_fed):
-    update_history_value(cursor, rfid, "leftover_portions", new_last_fed)
+def update_history_feedings_today(cursor, rfid, new_feedings_today):
+    update_history_value(cursor, rfid, "feedings_today", new_feedings_today)
+
+def update_history_portions_eaten_today(cursor, rfid, new_portions_eaten_today):
+    update_history_value(cursor, rfid, "portions_eaten_today", new_portions_eaten_today)
+
+def update_history_leftover_portions(cursor, rfid, new_leftover_portions):
+    update_history_value(cursor, rfid, "leftover_portions", new_leftover_portions)
+
+def eligible_to_feed(cursor, rfid):
+    if not check_pet_exists(cursor, rfid, "history"):
+        return True  # No history implies pet can be fed
+    max_meals = get_max_feedings_day(cursor, rfid) or 0
+    meals_today = get_feedings_today(cursor, rfid) or 0
+    return meals_today < max_meals
+
 
 def list_all_pets(cursor):
     return view_table(cursor, "pets")
