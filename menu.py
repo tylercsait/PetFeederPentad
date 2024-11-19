@@ -1,8 +1,4 @@
-"""
-Pet Feeder Main File
-Collaborators: Tsz Hei Chan, Ronghao Liu, Tyler Chow, Hung-Ju Ke, Nabil Mekhalfa
-Last Modified: 11/1/2024
-"""
+
 import registerpets
 import camera
 import fileupload
