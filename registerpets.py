@@ -1,8 +1,7 @@
 #import RPi.GPIO as GPIO
 import db_utils
+import rfid_utils
 #from mfrc522 import SimpleMFRC522
-
-from sqltest import mysql_connection
 
 
 def menu_registered():
@@ -109,13 +108,13 @@ def process_pet_input(cursor, rfid, rfid_text):
             db_utils.add_pet(cursor, rfid, rfid_text, portion_per_feedings, max_feedings, max_portions_per_day)
             print("Thank you, we have registered your pet.")
 
-def read_rfid():
-    reader = SimpleMFRC522()
-    try:
-        rfid, rfid_text = reader.read()
-        return rfid, rfid_text
-    finally:
-        GPIO.cleanup()
+# def read_rfid():
+#     reader = SimpleMFRC522()
+#     try:
+#         rfid, rfid_text = reader.read()
+#         return rfid, rfid_text
+#     finally:
+#         GPIO.cleanup()
 
 # def main(cursor):
 #     reader = SimpleMFRC522()
@@ -128,7 +127,4 @@ def read_rfid():
 #         GPIO.cleanup()
 
 
-if __name__ == "__main__":
-    with mysql_connection() as db_cursor:
-        print("This program removes or adds a pet to the app. You need to use the RFID tags on the RFID sensor.")
-        read_rfid(db_cursor)
+
