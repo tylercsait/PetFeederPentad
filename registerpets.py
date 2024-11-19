@@ -1,6 +1,6 @@
 #import RPi.GPIO as GPIO
 import db_utils
-import rfid_utils
+# import rfid_utils
 #from mfrc522 import SimpleMFRC522
 
 

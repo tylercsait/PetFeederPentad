@@ -10,7 +10,8 @@ import db_utils
 import rfid_utils
 import rest_api_utils
 import time
-
+import camera
+import fileupload
 GRAMS_PER_PORTION = 8 # 7-9 grams per portion, 8 is the middle
 
 def handle_rfid(cursor, rfid):
@@ -19,6 +20,10 @@ def handle_rfid(cursor, rfid):
         num_portions = db_utils.get_portion_per_feeding(cursor, rfid)
         rest_api_utils.dispense_portions(num_portions)
         db_utils.increment_feeding_history(cursor, rfid)
+
+        # Then take a picture and upload it
+        camera.capture_image()
+        # fileupload.upload_jpg_blob("/home/group3/test.jpeg", "test.jpg")
 
     else:
         print("Pet is not eligible. Not feeding")
