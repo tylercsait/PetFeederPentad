@@ -39,8 +39,6 @@ if __name__ == "__main__":
         # simulate_dispense_food(db_cursor, rfid)
         db_utils.view_table(db_cursor, "pets")
         db_utils.view_table(db_cursor, "history")
-        db_utils.view_table(db_cursor, "pets")
-        db_utils.view_table(db_cursor, "history")
 
 
 

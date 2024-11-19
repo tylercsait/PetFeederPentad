@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template('web_index.html')
+    return render_template('test.html')
 
 @app.route('/api/pets', methods=['POST'])
 def api_pets():
