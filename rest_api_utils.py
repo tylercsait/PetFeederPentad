@@ -1,7 +1,5 @@
 import requests
 
-
-
 def get_connection_str(file_path):
     with open(file_path, 'r') as file:
         return file.read().strip()
