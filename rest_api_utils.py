@@ -13,7 +13,7 @@ def set_entity_id(new_entity_id):
 def set_portion_size(new_portion_size):
     return new_portion_size
 
-def dispense_portions(url, token, entity_id, portion_size):
+def dispense_portions(portion_size):
     headers = {
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json"
@@ -44,10 +44,10 @@ def view_response(response):
 url = "http://137.186.88.102:53218/api/services/number/set_value"
 entity_id = "number.chong_wu_wei_shi_qi_sdk_feed"
 token = get_connection_str("token.txt")
-portion_size = 4
+aportion_size = 4
 
 # Example usage
 if __name__ == "__main__":
-    response = dispense_portions(url, token, entity_id, portion_size)
+    response = dispense_portions(aportion_size)
     if response:
         view_response(response)
