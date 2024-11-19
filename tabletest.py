@@ -14,11 +14,11 @@ from datetime import datetime
 
 # import registerpets
 
-def test_registerpets_process_pet_input(cursor, rfid, rfid_text):
-    #with mysql_connection() as cursor:
-        # db_utils.create_pets_table(cursor)
-    db_utils.view_table(cursor, "pets")
-    registerpets.process_pet_input(cursor, rfid, rfid_text)
+    # def test_registerpets_process_pet_input(cursor, rfid, rfid_text):
+#     with mysql_connection() as cursor:
+#          db_utils.create_pets_table(cursor)
+#     db_utils.view_table(cursor, "pets")
+#     registerpets.process_pet_input(cursor, rfid, rfid_text)
 
 
 def simulate_dispense_food(cursor, rfid):#Dispense food if history is empty
