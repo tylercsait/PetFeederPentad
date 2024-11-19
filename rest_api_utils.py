@@ -41,7 +41,8 @@ def view_response(response):
     print(f"Response Text: {response.text}")
 
 # Home Assistant API URL
-url = "http://137.186.88.102:53218/api/services/number/set_value"
+# url = "http://137.186.88.102:53218/api/services/number/set_value"
+url = "http://192.168.66.200:8123/api/services/number/set_value"
 entity_id = "number.chong_wu_wei_shi_qi_sdk_feed"
 token = get_connection_str("token.txt")
 aportion_size = 4
