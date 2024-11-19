@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import mysql.connector
 from mysql.connector import errorcode
 from contextlib import contextmanager
@@ -70,7 +72,7 @@ def create_history_table(cursor):
     CREATE TABLE history (
         rfid VARCHAR(50) PRIMARY KEY,
         date DATE,
-        last_time_fed TIME,
+        last_time_fed TIME NULL,
         feedings_today INTEGER,
         portions_eaten_today INTEGER,
         leftover_portions INTEGER
@@ -138,7 +140,7 @@ def add_history(cursor, rfid, last_time_fed, feedings_today, portions_eaten_toda
     print("Inserted", cursor.rowcount, "row(s) into history.")
 
 def __init_history(cursor, rfid):
-    add_history(cursor, rfid, -1, -1, -1, -1)
+    add_history(cursor, rfid, None, 0, 0, 0)
 
 def update_pet_value(cursor, rfid, column, new_value):
     update_query = f"UPDATE pets SET {column} = %s WHERE rfid = %s"
@@ -181,6 +183,17 @@ def eligible_to_feed(cursor, rfid):
     meals_today = get_feedings_today(cursor, rfid) or 0
     return meals_today < max_meals
 
+def increment_feeding_history(cursor, rfid):
+    # Safely handle None values by defaulting to 0
+    feedings = get_feedings_today(cursor, rfid) or 0
+    # Increment feedings count
+    update_history_feedings_today(cursor, rfid, feedings + 1)
+    # Update the last time fed to the current time
+    update_history_last_time_fed(cursor, rfid, datetime.now().time())
+
+def increment_portions_eaten_history(cursor, rfid):
+    portions = get_portions_eaten_today(cursor, rfid)
+    update_history_portions_eaten_today(cursor, rfid, portions+1)
 
 def list_all_pets(cursor):
     return view_table(cursor, "pets")
