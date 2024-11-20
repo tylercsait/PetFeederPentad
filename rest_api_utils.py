@@ -45,10 +45,10 @@ def view_response(response):
 url = "http://192.168.66.200:8123/api/services/number/set_value"
 entity_id = "number.smart_pet_feeder_feed"
 token = get_connection_str("token.txt")
-aportion_size = 4
+bportion_size = 4
 
 # Example usage
 if __name__ == "__main__":
-    response = dispense_portions(aportion_size)
+    response = dispense_portions(bportion_size)
     if response:
         view_response(response)
