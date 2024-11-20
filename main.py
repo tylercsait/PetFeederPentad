@@ -22,7 +22,7 @@ def handle_rfid(cursor, rfid):
         db_utils.increment_feeding_history(cursor, rfid)
 
         # Then take a picture and upload it
-        camera.capture_image()
+        # camera.capture_image()
         # fileupload.upload_jpg_blob("/home/group3/test.jpeg", "test.jpg")
 
     else:
