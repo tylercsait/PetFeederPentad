@@ -51,4 +51,5 @@ bportion_size = 4
 if __name__ == "__main__":
     response = dispense_portions(bportion_size)
     if response:
+        print("if response")
         view_response(response)
