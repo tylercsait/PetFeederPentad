@@ -18,8 +18,11 @@ def handle_rfid(cursor, rfid):
     if db_utils.eligible_to_feed(cursor, rfid):
         print("Pet is eligible. Feeding")
         num_portions = db_utils.get_portion_per_feeding(cursor, rfid)
+        print("1")
         rest_api_utils.dispense_portions(num_portions)
+        print("2")
         db_utils.increment_feeding_history(cursor, rfid)
+        print("3")
 
         # Then take a picture and upload it
         # camera.capture_image()
