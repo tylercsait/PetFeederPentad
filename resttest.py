@@ -5,7 +5,7 @@ import requests
 #url = "http://192.168.1.200:8123/api/services/number/set_value"
 url = "http://192.168.66.200:8123/api/services/number/set_value"
 
-entity_id = "number.chong_wu_wei_shi_qi_sdk_feed"
+entity_id = "number.smart_pet_feeder_feed"
 
 def get_connection_str(file_path):
     with open(file_path, 'r') as file:
@@ -13,7 +13,7 @@ def get_connection_str(file_path):
 
 token = get_connection_str("token.txt")
 
-portion_size = 3
+portion_size = 5
 # Headers
 headers = {
     "Authorization": f"Bearer {token}",
