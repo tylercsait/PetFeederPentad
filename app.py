@@ -21,7 +21,7 @@ def api_pets():
         if not db_utils.check_pet_exists(cursor, rfid, "pets"):
             db_utils.add_pet(cursor, rfid, rfid_text, max_feedings_day, max_portions_day, portions_per_feeding)
         else:
-            process_pet_input(cursor, rfid, rfid_text)
+            print("pet already exists")
 
     return jsonify({"message": "Pet information submitted successfully!"})
 

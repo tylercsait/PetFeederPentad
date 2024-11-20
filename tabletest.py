@@ -36,6 +36,7 @@ if __name__ == "__main__":
     rfid = "1223334444"
     rfid_text = "Jason"
     with db_utils.mysql_connection() as db_cursor:
+        db_utils.initialize_tables(db_cursor)
         # simulate_dispense_food(db_cursor, rfid)
         db_utils.view_table(db_cursor, "pets")
         db_utils.view_table(db_cursor, "history")
