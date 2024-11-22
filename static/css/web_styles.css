@@ -1,13 +1,15 @@
+@import url('https://unpkg.com/@catppuccin/palette/css/catppuccin.css');
+
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #f0f8ff;
-    color: #333;
+    background-color: var(--ctp-mocha-base); /* Base color from Catppuccin Mocha */
+    color: var(--ctp-mocha-text); /* Text color from Catppuccin Mocha */
     margin: 0;
     padding: 0;
 }
 
 header {
-    background-color: #ffcccb;
+    background-color: var(--ctp-mocha-crust); /* Rosewater color */
     padding: 20px;
     text-align: center;
 }
@@ -15,7 +17,26 @@ header {
 header h1 {
     margin: 0;
     font-size: 2.5em;
-    color: #333;
+    color: var(--ctp-mocha-text); /* Text color */
+}
+
+nav {
+    background-color: var(--ctp-mocha-mantle); /* Crust color */
+    overflow: hidden;
+}
+
+nav a {
+    float: left;
+    display: block;
+    color: var(--ctp-mocha-text); /* Text color */
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+nav a:hover {
+    background-color: var(--ctp-mocha-overlay0); /* Overlay color */
+    color: var(--ctp-mocha-crust); /* Crust color on hover */
 }
 
 main {
@@ -23,19 +44,20 @@ main {
     justify-content: center;
     align-items: center;
     height: 80vh;
+    padding-top: 20px;
 }
 
-.form-section {
-    background-color: #fff;
+.form-section, .table-section {
+    background-color: var(--ctp-mocha-surface0); /* Surface color */
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
 
-.form-section h2 {
+.form-section h2, .table-section h2 {
     margin-bottom: 20px;
-    color: #ff6347;
+    color: var(--ctp-mocha-overlay2); /* Overlay color */
 }
 
 label {
@@ -49,13 +71,13 @@ input[type="number"] {
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--ctp-mocha-surface2); /* Surface color */
     border-radius: 5px;
 }
 
 button {
-    background-color: #ff6347;
-    color: #fff;
+    background-color: var(--ctp-mocha-lavender); /* Lavender accent color */
+    color: var(--ctp-mocha-crust); /* Crust color */
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
@@ -64,11 +86,11 @@ button {
 }
 
 button:hover {
-    background-color: #ff4500;
+    background-color: var(--ctp-mocha-mauve); /* Darker lavender on hover */
 }
 
 footer {
-    background-color: #ffcccb;
+    background-color: var(--ctp-mocha-crust); /* Crust color */
     text-align: center;
     padding: 10px;
     position: fixed;
@@ -78,7 +100,7 @@ footer {
 
 footer p {
     margin: 0;
-    color: #333;
+    color: var(--ctp-mocha-text); /* Text color */
 }
 
 /* Add table styling */
@@ -91,65 +113,31 @@ table {
 
 th, td {
     padding: 12px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--ctp-mocha-surface2); /* Surface color */
     text-align: left;
 }
 
 th {
-    background-color: #ff6347;
-    color: white;
+    background-color: var(--ctp-mocha-overlay1); /* Overlay color */
+    color: var(--ctp-mocha-text); /* Text color */
     font-weight: bold;
 }
 
 tr:nth-child(even) {
-    background-color: #f9f9f9;
+    background-color: var(--ctp-mocha-surface1); /* Surface color for alternate rows */
 }
 
 tr:hover {
-    background-color: #f1f1f1;
+    background-color: var(--ctp-mocha-surface2); /* Surface color on hover */
 }
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register a Pet</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/web_styles.css') }}">
-</head>
-<body>
-    <nav>
-        <a href="{{ url_for('index') }}">Home</a>
-        <a href="{{ url_for('register') }}">Register a Pet</a>
-        <a href="{{ url_for('view_pets') }}">View All Registered Pets</a>
-        <a href="{{ url_for('another_page') }}">Another Page</a>
-    </nav>
-    <header>
-        <h1>Register a Pet</h1>
-    </header>
-    <main>
-        <section class="form-section">
-            <h2>Enter Your Cat's Information</h2>
-            <form id="pet-form">
-                <label for="rfid">RFID:</label>
-                <input type="text" id="rfid" name="rfid" required>
+/* Link Styling */
+a {
+    color: var(--ctp-mocha-blue); /* Rosewater color for links */
+    text-decoration: none; /* Remove underline */
+}
 
-                <label for="rfid_text">Cat's Name:</label>
-                <input type="text" id="rfid_text" name="rfid_text" required>
-
-                <label for="max_feedings_day">Max Feedings per Day:</label>
-                <input type="number" id="max_feedings_day" name="max_feedings_day" required>
-
-                <label for="portions_per_feeding">Portions per Feeding:</label>
-                <input type="number" id="portions_per_feeding" name="portions_per_feeding" required>
-
-                <button type="submit">Submit</button>
-            </form>
-        </section>
-    </main>
-    <footer>
-        <p>© 2024 SmartFeeder for Cats. All rights reserved.</p>
-    </footer>
-    <script src="{{ url_for('static', filename='js/pet_feeder_app.js') }}"></script>
-</body>
-</html>
+a:hover {
+    color: var(--ctp-mocha-lavender); /* Change to lavender on hover */
+    text-decoration: underline; /* Add underline on hover */
+}
