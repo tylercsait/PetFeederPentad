@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Pets</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/web_styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>All Registered Pets</h1>
+    </header>
+    <main>
+        <section>
+            <table>
+                <thead>
+                    <tr>
+                        <th>RFID</th>
+                        <th>Name</th>
+                        <th>Max Feedings Per Day</th>
+                        <th>Max Portions Per Day</th>
+                        <th>Portions Per Feeding</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pet in pets %}
+                    <tr>
+                        <td>{{ pet.rfid }}</td>
+                        <td>{{ pet.rfid_text }}</td>
+                        <td>{{ pet.max_feedings_day }}</td>
+                        <td>{{ pet.max_portions_day }}</td>
+                        <td>{{ pet.portions_per_feeding }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+    <footer>
+        <p>© 2024 All Registered Pets. All rights reserved.</p>
+    </footer>
+</body>
+</html>
