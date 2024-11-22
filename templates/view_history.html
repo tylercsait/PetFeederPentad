@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Pets</title>
+    <title>View History</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/web_styles.css') }}">
 </head>
 <body>
@@ -14,30 +14,28 @@
         <a href="{{ url_for('another_page') }}">Another Page</a>
     </nav>
     <header>
-        <h1>All Registered Pets</h1>
+        <h1>History for RFID: {{ rfid }}</h1>
     </header>
     <main>
         <section>
             <table>
                 <thead>
                     <tr>
-                        <th>RFID</th>
-                        <th>Name</th>
-                        <th>Max Feedings Per Day</th>
-                        <th>Max Portions Per Day</th>
-                        <th>Portions Per Feeding</th>
-                        <th>History</th>
+                        <th>Date</th>
+                        <th>Last Time Fed</th>
+                        <th>Feedings Today</th>
+                        <th>Portions Eaten Today</th>
+                        <th>Leftover Portions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for pet in pets %}
+                    {% for entry in history %}
                     <tr>
-                        <td>{{ pet.rfid }}</td>
-                        <td>{{ pet.rfid_text }}</td>
-                        <td>{{ pet.max_feedings_day }}</td>
-                        <td>{{ pet.max_portions_day }}</td>
-                        <td>{{ pet.portions_per_feeding }}</td>
-                        <td><a href="{{ url_for('view_history', rfid=pet.rfid) }}">View History</a></td>
+                        <td>{{ entry.date }}</td>
+                        <td>{{ entry.last_time_fed }}</td>
+                        <td>{{ entry.feedings_today }}</td>
+                        <td>{{ entry.portions_eaten_today }}</td>
+                        <td>{{ entry.leftover_portions }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -45,7 +43,7 @@
         </section>
     </main>
     <footer>
-        <p>© 2024 All Registered Pets. All rights reserved.</p>
+        <p>© 2024 History Records. All rights reserved.</p>
     </footer>
 </body>
 </html>

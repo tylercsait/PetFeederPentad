@@ -108,3 +108,48 @@ tr:nth-child(even) {
 tr:hover {
     background-color: #f1f1f1;
 }
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register a Pet</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/web_styles.css') }}">
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('register') }}">Register a Pet</a>
+        <a href="{{ url_for('view_pets') }}">View All Registered Pets</a>
+        <a href="{{ url_for('another_page') }}">Another Page</a>
+    </nav>
+    <header>
+        <h1>Register a Pet</h1>
+    </header>
+    <main>
+        <section class="form-section">
+            <h2>Enter Your Cat's Information</h2>
+            <form id="pet-form">
+                <label for="rfid">RFID:</label>
+                <input type="text" id="rfid" name="rfid" required>
+
+                <label for="rfid_text">Cat's Name:</label>
+                <input type="text" id="rfid_text" name="rfid_text" required>
+
+                <label for="max_feedings_day">Max Feedings per Day:</label>
+                <input type="number" id="max_feedings_day" name="max_feedings_day" required>
+
+                <label for="portions_per_feeding">Portions per Feeding:</label>
+                <input type="number" id="portions_per_feeding" name="portions_per_feeding" required>
+
+                <button type="submit">Submit</button>
+            </form>
+        </section>
+    </main>
+    <footer>
+        <p>© 2024 SmartFeeder for Cats. All rights reserved.</p>
+    </footer>
+    <script src="{{ url_for('static', filename='js/pet_feeder_app.js') }}"></script>
+</body>
+</html>

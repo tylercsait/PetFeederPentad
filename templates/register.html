@@ -3,12 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartFeeder for Cats</title>
+    <title>Register a Pet</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/web_styles.css') }}">
 </head>
 <body>
+    <nav>
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('register') }}">Register a Pet</a>
+        <a href="{{ url_for('view_pets') }}">View All Registered Pets</a>
+        <a href="{{ url_for('another_page') }}">Another Page</a>
+    </nav>
     <header>
-        <h1>SmartFeeder for Cats</h1>
+        <h1>Register a Pet</h1>
     </header>
     <main>
         <section class="form-section">

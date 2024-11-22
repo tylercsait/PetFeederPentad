@@ -23,6 +23,15 @@ def view_pets():
         pets = [dict(rfid=row[0], rfid_text=row[1], max_feedings_day=row[2], max_portions_day=row[3], portions_per_feeding=row[4]) for row in pets]
     return render_template('view_pets.html', pets=pets)
 
+# Route for viewing history of a pet by RFID
+@app.route('/view-history/<rfid>')
+def view_history(rfid):
+    with db_utils.mysql_connection() as cursor:
+        cursor.execute("SELECT date, last_time_fed, feedings_today, portions_eaten_today, leftover_portions FROM history WHERE rfid = %s", (rfid,))
+        history = cursor.fetchall()
+        history = [dict(date=row[0], last_time_fed=row[1], feedings_today=row[2], portions_eaten_today=row[3], leftover_portions=row[4]) for row in history]
+    return render_template('view_history.html', rfid=rfid, history=history)
+
 # Route for another page
 @app.route('/another-page')
 def another_page():
