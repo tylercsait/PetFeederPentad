@@ -4,9 +4,20 @@ from registerpets import process_pet_input
 
 app = Flask(__name__)
 
+# Route for the SmartFeeder page
+@app.route('/register')
+def register():
+    return render_template('register.html')
+
+# Default route for the directory page (now index.html)
 @app.route('/')
 def index():
-    return render_template('test.html')
+    return render_template('index.html')
+
+# Route for another page
+@app.route('/another-page')
+def another_page():
+    return render_template('another_page.html')
 
 @app.route('/api/pets', methods=['POST'])
 def api_pets():
