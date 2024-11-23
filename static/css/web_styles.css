@@ -1,15 +1,30 @@
-@import url('https://unpkg.com/@catppuccin/palette/css/catppuccin.css');
+:root {
+    --background-color: #191724; /* Base color */
+    --text-color: #e0def4; /* Text color */
+    --header-background: #1f1d2e; /* Header background color */
+    --nav-background: #26233a; /* Nav background color */
+    --link-color: #ebbcba; /* Link text color */
+    --link-hover-color: #f6c177; /* Link hover color */
+    --button-background: #9ccfd8; /* Button background color */
+    --button-hover-background: #31748f; /* Button hover background color */
+    --border-color: #6e6a86; /* Border color */
+    --footer-background: #191724; /* Footer background color */
+    --footer-text-color: #e0def4; /* Footer text color */
+    --section-background: #1f1d2e; /* Section background color */
+    --row-background: #1f1d2e; /* Row background color */
+    --hover-row-background: #403d52; /* Hover row background color */
+}
 
 body {
     font-family: 'Arial', sans-serif;
-    background-color: var(--ctp-mocha-base); /* Base color from Catppuccin Mocha */
-    color: var(--ctp-mocha-text); /* Text color from Catppuccin Mocha */
+    background-color: var(--background-color);
+    color: var(--text-color);
     margin: 0;
     padding: 0;
 }
 
 header {
-    background-color: var(--ctp-mocha-crust); /* Rosewater color */
+    background-color: var(--header-background);
     padding: 20px;
     text-align: center;
 }
@@ -17,26 +32,26 @@ header {
 header h1 {
     margin: 0;
     font-size: 2.5em;
-    color: var(--ctp-mocha-text); /* Text color */
+    color: var(--text-color);
 }
 
 nav {
-    background-color: var(--ctp-mocha-mantle); /* Crust color */
+    background-color: var(--nav-background);
     overflow: hidden;
 }
 
 nav a {
     float: left;
     display: block;
-    color: var(--ctp-mocha-text); /* Text color */
+    color: var(--link-color);
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
 }
 
 nav a:hover {
-    background-color: var(--ctp-mocha-overlay0); /* Overlay color */
-    color: var(--ctp-mocha-crust); /* Crust color on hover */
+    background-color: var(--button-hover-background);
+    color: var(--text-color);
 }
 
 main {
@@ -48,7 +63,7 @@ main {
 }
 
 .form-section, .table-section {
-    background-color: var(--ctp-mocha-surface0); /* Surface color */
+    background-color: var(--section-background);
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -57,7 +72,7 @@ main {
 
 .form-section h2, .table-section h2 {
     margin-bottom: 20px;
-    color: var(--ctp-mocha-overlay2); /* Overlay color */
+    color: var(--text-color);
 }
 
 label {
@@ -71,13 +86,13 @@ input[type="number"] {
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
-    border: 1px solid var(--ctp-mocha-surface2); /* Surface color */
+    border: 1px solid var(--border-color);
     border-radius: 5px;
 }
 
 button {
-    background-color: var(--ctp-mocha-lavender); /* Lavender accent color */
-    color: var(--ctp-mocha-crust); /* Crust color */
+    background-color: var(--button-background);
+    color: var(--text-color);
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
@@ -86,11 +101,11 @@ button {
 }
 
 button:hover {
-    background-color: var(--ctp-mocha-mauve); /* Darker lavender on hover */
+    background-color: var(--button-hover-background);
 }
 
 footer {
-    background-color: var(--ctp-mocha-crust); /* Crust color */
+    background-color: var(--footer-background);
     text-align: center;
     padding: 10px;
     position: fixed;
@@ -100,7 +115,7 @@ footer {
 
 footer p {
     margin: 0;
-    color: var(--ctp-mocha-text); /* Text color */
+    color: var(--footer-text-color);
 }
 
 /* Add table styling */
@@ -113,31 +128,31 @@ table {
 
 th, td {
     padding: 12px;
-    border-bottom: 1px solid var(--ctp-mocha-surface2); /* Surface color */
+    border-bottom: 1px solid var(--border-color);
     text-align: left;
 }
 
 th {
-    background-color: var(--ctp-mocha-overlay1); /* Overlay color */
-    color: var(--ctp-mocha-text); /* Text color */
+    background-color: var(--nav-background);
+    color: var(--footer-text-color);
     font-weight: bold;
 }
 
 tr:nth-child(even) {
-    background-color: var(--ctp-mocha-surface1); /* Surface color for alternate rows */
+    background-color: var(--row-background);
 }
 
 tr:hover {
-    background-color: var(--ctp-mocha-surface2); /* Surface color on hover */
+    background-color: var(--hover-row-background);
 }
 
 /* Link Styling */
 a {
-    color: var(--ctp-mocha-blue); /* Rosewater color for links */
-    text-decoration: none; /* Remove underline */
+    color: var(--link-color);
+    text-decoration: none;
 }
 
 a:hover {
-    color: var(--ctp-mocha-lavender); /* Change to lavender on hover */
-    text-decoration: underline; /* Add underline on hover */
+    color: var(--link-hover-color);
+    text-decoration: underline;
 }
