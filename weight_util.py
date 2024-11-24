@@ -46,3 +46,10 @@ def get_weight(hx):
 def cleanup():
     GPIO.cleanup()
     sys.exit()
+
+GRAMS_PER_PORTION = 17
+
+def grams_to_portions(grams):
+    portions = grams/GRAMS_PER_PORTION
+    return portions
+
