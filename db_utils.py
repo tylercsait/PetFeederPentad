@@ -192,25 +192,29 @@ def eligible_to_feed(cursor, rfid):
     meals_today = get_feedings_today(cursor, rfid) or 0
     return meals_today < max_meals
 
-
-def increment_feeding_history(cursor, rfid):
-    # Check if the record for TODAY exists
+def init_history_today(cursor, rfid):
     if get_date_fed(cursor, rfid, TODAY) is None:
         # Insert a new record for today
         add_history(cursor, rfid, TODAY,None, 0, 0, 0)
 
+def increment_feeding_history(cursor, rfid):
+    # Check if the record for TODAY exists
+    init_history_today(cursor, rfid)
     # Safely handle None values by defaulting to 0
     feedings = get_feedings_today(cursor, rfid) or 0
-
     # Increment feedings count
     update_history_feedings_today(cursor, rfid, feedings + 1)
     # Update the last time fed to the current time
     update_history_last_time_fed(cursor, rfid, datetime.now().time())
 
 
-def increment_portions_eaten_history(cursor, rfid):
-    portions = get_portions_eaten_today(cursor, rfid)
-    update_history_portions_eaten_today(cursor, rfid, portions+1)
+
+
+
+def increment_portions_eaten_history(cursor, rfid, portions_eaten):
+    init_history_today(cursor, rfid)
+    old_portions = get_portions_eaten_today(cursor, rfid, TODAY) or 0
+    update_history_portions_eaten_today(cursor, rfid, old_portions + portions_eaten)
 
 def list_all_pets(cursor):
     return view_table(cursor, "pets")
