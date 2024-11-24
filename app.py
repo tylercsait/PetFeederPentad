@@ -1,8 +1,11 @@
-from flask import Flask, request, jsonify, render_template, redirect, url_for
+from flask import Flask, request, jsonify, render_template
+from flask_socketio import SocketIO, emit
 import db_utils
 from registerpets import process_pet_input
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secret!'
+socketio = SocketIO(app)
 
 # Route for the register pets page
 @app.route('/register')
@@ -49,10 +52,25 @@ def api_pets():
     with db_utils.mysql_connection() as cursor:
         if not db_utils.check_pet_exists(cursor, rfid, "pets"):
             db_utils.add_pet(cursor, rfid, rfid_text, max_feedings_day, max_portions_day, portions_per_feeding)
+            socketio.emit('new_pet', {'message': f'New pet registered: {rfid_text}'}, namespace='/notifications')
         else:
-            print("pet already exists")
+            print("Pet already exists")
 
     return jsonify({"message": "Pet information submitted successfully!"})
 
+@socketio.on('connect', namespace='/notifications')
+def connect():
+    print("Client connected")
+
+@socketio.on('disconnect', namespace='/notifications')
+def disconnect():
+    print("Client disconnected")
+
+def send_notification(message):
+    with app.app_context():
+        print(f'Sending notification: {message}')
+        socketio.emit('notify', {'message': message}, namespace='/notifications')
+        print("Notification emitted")  # Log after emitting
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app, debug=True, allow_unsafe_werkzeug=True)
