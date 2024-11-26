@@ -26,6 +26,7 @@
                         <th>Feedings Today</th>
                         <th>Portions Eaten Today</th>
                         <th>Leftover Portions</th>
+                        <th>Latest Image</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -36,6 +37,9 @@
                         <td>{{ entry.feedings_today }}</td>
                         <td>{{ entry.portions_eaten_today }}</td>
                         <td>{{ entry.leftover_portions }}</td>
+                        <td>
+                            <a href="https://pentadstorageacc.blob.core.windows.net/pentadcontainer/{{ rfid }}-{{ entry.date }}.jpg">View Image</a>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -43,7 +47,7 @@
         </section>
     </main>
     <footer>
-        <p></p>
+        <p>Last Fed: {{ last_time_fed }} on {{ date }}</p>
     </footer>
 </body>
 </html>
