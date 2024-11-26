@@ -7,6 +7,7 @@ from venv import create
 import db_utils
 import rest_api_utils
 #from venv import create
+import fileupload
 
 #import pets_db_utils
 #from datetime import date, datetime
@@ -37,7 +38,9 @@ if __name__ == "__main__":
     rfid_text = "Jason"
     with db_utils.mysql_connection() as db_cursor:
         # db_utils.initialize_tables(db_cursor)
-        # simulate_dispense_food(db_cursor, rfid)
+        simulate_dispense_food(db_cursor, rfid)
+        fileupload.upload_jpg_blob("C:\\users\\Tyler\\Desktop\\c.jpg",db_utils.create_file_name(db_cursor, rfid))
+        # print(db_utils.create_file_name(db_cursor, "a"))
         db_utils.view_table(db_cursor, "pets")
         db_utils.view_table(db_cursor, "history")
 

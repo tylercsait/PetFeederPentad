@@ -30,7 +30,9 @@ def view_history(rfid):
         cursor.execute("SELECT date, last_time_fed, feedings_today, portions_eaten_today, leftover_portions FROM history WHERE rfid = %s", (rfid,))
         history = cursor.fetchall()
         history = [dict(date=row[0], last_time_fed=row[1], feedings_today=row[2], portions_eaten_today=row[3], leftover_portions=row[4]) for row in history]
-    return render_template('view_history.html', rfid=rfid, history=history)
+    last_time_fed = history[-1]['last_time_fed'] if history else "N/A"
+    date = history[-1]['date'] if history else "N/A"
+    return render_template('view_history.html', rfid=rfid, history=history,last_time_fed=last_time_fed, date=date)
 
 # Route for another page
 @app.route('/another-page')

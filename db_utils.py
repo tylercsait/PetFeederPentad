@@ -226,3 +226,21 @@ def delete_pet_by_rfid(cursor, rfid):
     delete_query = "DELETE FROM pets WHERE rfid = %s"
     cursor.execute(delete_query, (rfid,))
     print("Deleted", cursor.rowcount, "row(s).")
+
+
+def create_file_name(cursor, rfid):
+    # Fetch the required data from the database
+    cursor.execute(
+        "SELECT date, last_time_fed FROM history WHERE rfid = %s ORDER BY date DESC, last_time_fed DESC LIMIT 1",
+        (rfid,))
+    row = cursor.fetchone()
+
+    if row:
+        date = row[0].strftime('%Y-%m-%d')  # Format date as YYYY-MM-DD
+        # last_time_fed = row[1].strftime('%H-%M-%S')  # Format time as HH-MM-SS
+        file_name = f"{rfid}-{date}.jpg"
+    else:
+        file_name = f"{rfid}-no-data.jpeg"
+
+    return file_name
+

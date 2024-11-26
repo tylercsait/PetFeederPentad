@@ -26,9 +26,11 @@ def handle_rfid_occupied(cursor, rfid, previous_leftover_portions):
         db_utils.increment_feeding_history(cursor, rfid)
         print("3")
 
+        filename = db_utils.create_file_name(cursor, rfid)
+        location = 'home/group3/'
         # Then take a picture and upload it
-        # camera.capture_image()
-        # fileupload.upload_jpg_blob("/home/group3/test.jpeg", "test.jpg")
+        # camera.capture_image(location, filename)
+        # fileupload.upload_jpg_blob(f"{location}{filename}", filename)
 
     else:
         print("Pet is not eligible. Not feeding")
