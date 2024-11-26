@@ -208,9 +208,9 @@ def increment_feeding_history(cursor, rfid):
     update_history_last_time_fed(cursor, rfid, datetime.now().time())
 
 
-def increment_portions_eaten_history(cursor, rfid):
+def increment_portions_eaten_history(cursor, rfid, portions_eaten):
     portions = get_portions_eaten_today(cursor, rfid)
-    update_history_portions_eaten_today(cursor, rfid, portions+1)
+    update_history_portions_eaten_today(cursor, rfid, portions+portions_eaten)
 
 def list_all_pets(cursor):
     return view_table(cursor, "pets")
