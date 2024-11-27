@@ -1,246 +1,183 @@
-from datetime import datetime, date
-
 import mysql.connector
-from mysql.connector import errorcode
-from contextlib import contextmanager
+from datetime import datetime, date, timedelta
+import json
 
-"This code contains methods to use the DB"
+# 从配置文件中读取数据库连接信息
+with open('config.json', 'r') as config_file:
+    config = json.load(config_file)
+
+DB_HOST = config['DB_HOST']
+DB_USER = config['DB_USER']
+DB_PASSWORD = config['DB_PASSWORD']
+DB_NAME = config['DB_NAME']
+
+def mysql_connection():
+    return mysql.connector.connect(
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
+    )
 
 TODAY = date.today()
-# Shared configuration for database connection
-config = {
-    'host': 'testsqlpentad.mysql.database.azure.com',
-    'user': 'group3',
-    'password': 'proj309@SAIT',
-    'database': 'testdb'
-    # 'client_flags': [mysql.connector.ClientFlag.SSL],
-    # 'ssl_ca': '<path-to-SSL-cert>/DigiCertGlobalRootG2.crt.pem'
-}
 
-def close_connection(connection, cursor):
-    if cursor:
-        cursor.close()
-    if connection:
-        connection.close()
-    print("Connection closed.")
-
-@contextmanager
-def mysql_connection():
-    connection = None
-    cursor = None
-    try:
-        connection = mysql.connector.connect(**config)
-        print("Connection established")
-        cursor = connection.cursor(buffered=True)  # Use a buffered cursor
-        yield cursor
-        connection.commit()
-    except mysql.connector.Error as err:
-        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-            print("Something is wrong with the user name or password")
-        elif err.errno == errorcode.ER_BAD_DB_ERROR:
-            print("Database does not exist")
-        else:
-            print(err)
-    finally:
-        close_connection(connection, cursor)
-
-
-def __create_table(cursor, table_name, create_query):
-    cursor.execute(f"DROP TABLE IF EXISTS {table_name};")
-    print(f"Finished dropping {table_name} table (if existed).")
-    cursor.execute(create_query)
-    print(f"Finished creating {table_name} table.")
-
-def __get_column_value(cursor, table, column, rfid):
-    query = f"SELECT {column} FROM {table} WHERE rfid = %s"
-    cursor.execute(query, (rfid,))
-    result = cursor.fetchone()
-    return result[0] if result else None
-
-def get_column_value_for_date(cursor, table, column, rfid, date):
-    query = f"SELECT {column} FROM {table} WHERE rfid = %s AND date = %s"
-    cursor.execute(query, (rfid, date))
-    result = cursor.fetchone()
-    return result[0] if result else None
-
-def create_pets_table(cursor):
-    create_query = """
-    CREATE TABLE pets (
-        rfid VARCHAR(50) PRIMARY KEY,
-        rfid_text VARCHAR(50),
-        max_feedings_day INTEGER,
-        max_portions_day INTEGER,
-        portions_per_feeding INTEGER
-    );
-    """
-    __create_table(cursor, "pets", create_query)
-
-def create_history_table(cursor):
-    create_query = """
-    CREATE TABLE history (
-        rfid VARCHAR(50),
-        date DATE,
-        last_time_fed TIME NULL,
-        feedings_today INTEGER,
-        portions_eaten_today INTEGER,
-        leftover_portions INTEGER,
-        PRIMARY KEY (rfid, date)  -- Composite primary key
-    );
-    """
-    __create_table(cursor, "history", create_query)
-
-def initialize_tables(cursor):
-    create_pets_table(cursor)
-    create_history_table(cursor)
-
-def get_date_fed(cursor,rfid, the_date):
-    return get_column_value_for_date(cursor, "history", "date", rfid, the_date)
-
-def get_last_time_fed(cursor, rfid, the_date):
-    return get_column_value_for_date(cursor, "history", "last_time_fed", rfid, the_date)
+def init_history_today(cursor, rfid):
+    # 检查今天是否已有历史记录，如果没有则插入一条新的
+    query = "SELECT COUNT(*) FROM history WHERE rfid = %s AND date = %s"
+    cursor.execute(query, (rfid, TODAY))
+    count = cursor.fetchone()[0]
+    print(f"History records for RFID {rfid} on {TODAY}: {count}")  # 调试信息
+    if count == 0:
+        insert_query = "INSERT INTO history (rfid, date, feedings_today, portions_eaten_today, leftover_portions) VALUES (%s, %s, %s, %s, %s)"
+        cursor.execute(insert_query, (rfid, TODAY, 0, 0, 0))
+        print(f"Inserted new history record for RFID {rfid} on {TODAY}")
+    else:
+        print(f"History record already exists for RFID {rfid} on {TODAY}")
 
 def get_feedings_today(cursor, rfid):
-    return get_column_value_for_date(cursor, "history", "feedings_today", rfid, TODAY)
+    value = get_column_value_for_date(cursor, "history", "feedings_today", rfid, TODAY)
+    print(f"Retrieved feedings_today from database: {value}")  # 调试信息
+    return value
 
-def get_portions_eaten_today(cursor, rfid, the_date):
-    return get_column_value_for_date(cursor, "history", "portions_eaten_today", rfid, the_date)
-
-def get_leftover_portions(cursor, rfid, the_date):
-    return get_column_value_for_date(cursor, "history", "leftover_portions", rfid, the_date)
-
-def get_rfid_text(cursor, rfid):
-    return __get_column_value(cursor, "pets", "rfid_text", rfid)
-
-def get_max_feedings_day(cursor, rfid):
-    return __get_column_value(cursor, "pets", "max_feedings_day", rfid)
-
-def get_max_portions_day(cursor, rfid):
-    return __get_column_value(cursor, "pets", "max_portions_day", rfid)
-
-def get_portion_per_feeding(cursor, rfid):
-    return __get_column_value(cursor, "pets", "portions_per_feeding", rfid)
-
-
-ALLOWED_TABLES = {'pets', 'history'}
-
-def check_pet_exists(cursor, rfid, db):
-    if db not in ALLOWED_TABLES:
-        raise ValueError(f"Invalid table name: {db}")
-    query = "SELECT 1 FROM {} WHERE rfid = %s".format(db)
-    cursor.execute(query, (rfid,))
-    return cursor.fetchone() is not None
-
-def add_pet(cursor, rfid, rfid_text, max_feedings_day, max_portions_day, portions_per_feeding):
-    insert_query = """
-    INSERT INTO pets (rfid, rfid_text, max_feedings_day, max_portions_day, portions_per_feeding)
-    VALUES (%s, %s, %s, %s, %s)
-    """
-    cursor.execute(insert_query, (rfid, rfid_text, max_feedings_day, max_portions_day, portions_per_feeding))
-    print("Inserted", cursor.rowcount, "row(s) of data.")
-
-    __init_history(cursor, rfid)
-
-def add_history(cursor, rfid, the_date, last_time_fed, feedings_today, portions_eaten_today, leftover_portions):
-    insert_query = """
-        INSERT INTO history (rfid, date, last_time_fed, feedings_today, portions_eaten_today, leftover_portions)
-        VALUES (%s, %s, %s, %s, %s, %s)
-    """
-    cursor.execute(insert_query, (rfid, the_date, last_time_fed, feedings_today, portions_eaten_today, leftover_portions))
-    print("Inserted", cursor.rowcount, "row(s) into history.")
-
-def __init_history(cursor, rfid):
-    add_history(cursor, rfid, TODAY, None, 0, 0, 0)
-
-def update_pet_value(cursor, rfid, column, new_value):
-    update_query = f"UPDATE pets SET {column} = %s WHERE rfid = %s"
-    cursor.execute(update_query, (new_value, rfid))
-    print(f"Updated {column} for", cursor.rowcount, "row(s).")
-
-def update_pet_name(cursor, rfid, new_name):
-    update_pet_value(cursor, rfid, "rfid_text", new_name)
-
-def update_pet_portion_size(cursor, rfid, new_portion_size):
-    update_pet_value(cursor, rfid, "portions_per_feeding", new_portion_size)
-
-def update_pet_max_feedings(cursor, rfid, new_max_feedings):
-    update_pet_value(cursor, rfid, "max_feedings_day", new_max_feedings)
-
-def update_pet_feedings_today(cursor, rfid, new_feedings_today):
-    update_pet_value(cursor, rfid, "max_portions_day", new_feedings_today)
-
-def update_history_value(cursor, rfid, the_date, column, new_value):
-    update_query = f"UPDATE history SET {column} = %s WHERE rfid = %s AND date = %s"
-    cursor.execute(update_query, (new_value, rfid, the_date))
-    print(f"Updated {column} for", cursor.rowcount, "row(s).")
-
-def update_history_last_time_fed(cursor, rfid, new_last_fed):
-    update_history_value(cursor, rfid, TODAY,"last_time_fed", new_last_fed)
+def get_column_value_for_date(cursor, table, column, rfid, date_value):
+    query = f"SELECT {column} FROM {table} WHERE rfid = %s AND date = %s"
+    cursor.execute(query, (rfid, date_value))
+    result = cursor.fetchone()
+    if result:
+        value = result[0]
+        print(f"Value retrieved for {column}: {value}")  # 调试信息
+        return value
+    else:
+        print(f"No value found for {column} on date {date_value} for RFID {rfid}")  # 调试信息
+        return None
 
 def update_history_feedings_today(cursor, rfid, new_feedings_today):
+    print(f"Updating feedings_today to {new_feedings_today} for RFID {rfid}")  # 调试信息
     update_history_value(cursor, rfid, TODAY, "feedings_today", new_feedings_today)
 
-def update_history_portions_eaten_today(cursor, rfid, new_portions_eaten_today):
-    update_history_value(cursor, rfid, TODAY, "portions_eaten_today", new_portions_eaten_today)
-
-def update_history_leftover_portions(cursor, rfid, the_date, new_leftover_portions):
-    update_history_value(cursor, rfid, the_date, "leftover_portions", new_leftover_portions)
-
-def eligible_to_feed(cursor, rfid):
-    if not check_pet_exists(cursor, rfid, "history"):
-        return True  # No history implies pet can be fed
-    max_meals = get_max_feedings_day(cursor, rfid) or 0
-    meals_today = get_feedings_today(cursor, rfid) or 0
-    return meals_today < max_meals
-
+def update_history_value(cursor, rfid, the_date, column, new_value):
+    print(f"Updating {column} to {new_value} for RFID {rfid} on date {the_date}")  # 调试信息
+    update_query = f"UPDATE history SET {column} = %s WHERE rfid = %s AND date = %s"
+    cursor.execute(update_query, (new_value, rfid, the_date))
+    print(f"Updated {column} for {cursor.rowcount} row(s).")  # 调试信息
 
 def increment_feeding_history(cursor, rfid):
-    # Check if the record for TODAY exists
-    if get_date_fed(cursor, rfid, TODAY) is None:
-        # Insert a new record for today
-        add_history(cursor, rfid, TODAY,None, 0, 0, 0)
+    # 确保今天的历史记录存在
+    init_history_today(cursor, rfid)
+    
+    # 获取当前的 feedings_today 值
+    feedings = get_feedings_today(cursor, rfid)
+    print(f"Current feedings_today: {feedings}")  # 调试信息
 
-    # Safely handle None values by defaulting to 0
-    feedings = get_feedings_today(cursor, rfid) or 0
+    # 确保 feedings 是数值类型
+    try:
+        if feedings is None:
+            feedings = 0
+        else:
+            feedings = int(feedings)
+    except ValueError:
+        print(f"Invalid feedings_today value: {feedings}. Setting to 0.")
+        feedings = 0
 
-    # Increment feedings count
-    update_history_feedings_today(cursor, rfid, feedings + 1)
-    # Update the last time fed to the current time
-    update_history_last_time_fed(cursor, rfid, datetime.now().time())
+    # 增加 feedings_today 的计数
+    new_feedings = feedings + 1
+    print(f"Incremented feedings_today: {new_feedings}")  # 调试信息
+    update_history_feedings_today(cursor, rfid, new_feedings)
 
+    # 更新 last_time_fed
+    update_history_last_time_fed(cursor, rfid, datetime.now())
+
+def update_history_last_time_fed(cursor, rfid, new_last_time_fed):
+    print(f"Updating last_time_fed to {new_last_time_fed} for RFID {rfid}")  # 调试信息
+    update_query = "UPDATE history SET last_time_fed = %s WHERE rfid = %s AND date = %s"
+    cursor.execute(update_query, (new_last_time_fed, rfid, TODAY))
+    print(f"Updated last_time_fed for {cursor.rowcount} row(s).")  # 调试信息
+
+def eligible_to_feed(cursor, rfid):
+    try:
+        # 获取宠物的上次喂食时间
+        query = "SELECT last_time_fed FROM history WHERE rfid = %s ORDER BY date DESC LIMIT 1"
+        cursor.execute(query, (rfid,))
+        result = cursor.fetchone()
+
+        if result and result[0]:
+            last_time_fed = result[0]
+        #     定义允许再次喂食的最小间隔时间
+        #     feeding_interval = timedelta(hours=2)  # 根据您的需求调整
+        #     next_allowed_time = last_time_fed + feeding_interval
+        #     now = datetime.now()
+        #     if now >= next_allowed_time:
+        #         return True
+        #     else:
+        #         return False
+            return True
+        else:
+        #    如果没有喂食记录，允许喂食
+            return True
+    except mysql.connector.Error as err:
+        print(f"Database error in eligible_to_feed: {err}")
+        return False
+
+def get_portion_per_feeding(cursor, rfid):
+    try:
+        # 从数据库中获取每次喂食的份数
+        query = "SELECT portions_per_feeding FROM pets WHERE rfid = %s"
+        cursor.execute(query, (rfid,))
+        result = cursor.fetchone()
+        if result and result[0]:
+            portions_per_feeding = result[0]
+            print(f"Portion per feeding for RFID {rfid}: {portions_per_feeding}")  # 调试信息
+            return portions_per_feeding
+        else:
+            print(f"No portions_per_feeding found for RFID {rfid}. Using default value 1.")
+            return 1  # 默认值
+    except mysql.connector.Error as err:
+        print(f"Database error in get_portion_per_feeding: {err}")
+        return 1  # 默认值
 
 def increment_portions_eaten_history(cursor, rfid, portions_eaten):
-    portions = get_portions_eaten_today(cursor, rfid)
-    update_history_portions_eaten_today(cursor, rfid, portions+portions_eaten)
+    # 确保今天的历史记录存在
+    init_history_today(cursor, rfid)
+    
+    # 获取当前的 portions_eaten_today 值
+    portions_eaten_today = get_portions_eaten_today(cursor, rfid)
+    print(f"Current portions_eaten_today: {portions_eaten_today}")  # 调试信息
 
-def list_all_pets(cursor):
-    return view_table(cursor, "pets")
+    # 确保 portions_eaten_today 是数值类型
+    try:
+        if portions_eaten_today is None:
+            portions_eaten_today = 0.0
+        else:
+            portions_eaten_today = float(portions_eaten_today)
+    except ValueError:
+        print(f"Invalid portions_eaten_today value: {portions_eaten_today}. Setting to 0.")
+        portions_eaten_today = 0.0
 
-def view_table(cursor, db_name):
-    query = f"SELECT * FROM {db_name}"
-    cursor.execute(query)
-    rows = cursor.fetchall()
-    for row in rows:
-        print(row)
+    # 增加 portions_eaten_today
+    new_portions_eaten_today = portions_eaten_today + portions_eaten
+    print(f"Incremented portions_eaten_today: {new_portions_eaten_today}")  # 调试信息
+    update_history_portions_eaten_today(cursor, rfid, new_portions_eaten_today)
 
-def delete_pet_by_rfid(cursor, rfid):
-    delete_query = "DELETE FROM pets WHERE rfid = %s"
-    cursor.execute(delete_query, (rfid,))
-    print("Deleted", cursor.rowcount, "row(s).")
+def get_portions_eaten_today(cursor, rfid):
+    value = get_column_value_for_date(cursor, "history", "portions_eaten_today", rfid, TODAY)
+    print(f"Retrieved portions_eaten_today from database: {value}")  # 调试信息
+    return value
 
+def update_history_portions_eaten_today(cursor, rfid, new_portions_eaten_today):
+    print(f"Updating portions_eaten_today to {new_portions_eaten_today} for RFID {rfid}")  # 调试信息
+    update_history_value(cursor, rfid, TODAY, "portions_eaten_today", new_portions_eaten_today)
 
-def create_file_name(cursor, rfid):
-    # Fetch the required data from the database
-    cursor.execute(
-        "SELECT date, last_time_fed FROM history WHERE rfid = %s ORDER BY date DESC, last_time_fed DESC LIMIT 1",
-        (rfid,))
-    row = cursor.fetchone()
-
-    if row:
-        date = row[0].strftime('%Y-%m-%d')  # Format date as YYYY-MM-DD
-        # last_time_fed = row[1].strftime('%H-%M-%S')  # Format time as HH-MM-SS
-        file_name = f"{rfid}-{date}.jpg"
-    else:
-        file_name = f"{rfid}-no-data.jpeg"
-
-    return file_name
-
+# 示例用法
+if __name__ == "__main__":
+    try:
+        connection = mysql_connection()
+        cursor = connection.cursor()
+        rfid = '302833627647'  # 示例 RFID
+        increment_feeding_history(cursor, rfid)
+        connection.commit()
+        print("Database update committed.")
+    except mysql.connector.Error as err:
+        print(f"Database error: {err}")
+    finally:
+        cursor.close()
+        connection.close()

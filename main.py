@@ -22,36 +22,43 @@ def handle_rfid_occupied(cursor, rfid, previous_leftover_portions):
     if db_utils.eligible_to_feed(cursor, rfid):
         print("Pet is eligible. Feeding")
         num_portions = db_utils.get_portion_per_feeding(cursor, rfid)
-        # round down leftover portions
-        print("1")
-        rest_api_utils.dispense_portions(num_portions - previous_leftover_portions)
-        print("2")
+        print(f"Portions per feeding from database: {num_portions}")
+        print(f"Previous leftover portions: {previous_leftover_portions}")
+        portions_to_dispense = round(num_portions - previous_leftover_portions)
+        print(f"Calculated portions to dispense: {portions_to_dispense}")
+        if portions_to_dispense > 0:
+            try:
+                rest_api_utils.dispense_portions(portions_to_dispense)
+                print("Dispense function executed successfully.")
+            except Exception as e:
+                print(f"Error in dispensing portions: {e}")
+        else:
+            print("No portions to dispense.")
         db_utils.increment_feeding_history(cursor, rfid)
-        print("3")
-
-        filename = db_utils.create_file_name(cursor, rfid)
-        location = 'home/group3/'
-        # Then take a picture and upload it
+        print("Feeding history updated.")
+        # 拍照并上传的代码，可以根据需要启用
+        # filename = db_utils.create_file_name(cursor, rfid)
+        # location = 'home/group3/'
         # camera.capture_image(location, filename)
         # fileupload.upload_jpg_blob(f"{location}{filename}", filename)
-
     else:
         print("Pet is not eligible. Not feeding")
 
-def handle_rfid_not_occupied(cursor, rfid, previous_leftovers, leftovers):
+def handle_rfid_not_occupied(cursor, rfid, previous_leftovers_portions, leftover_portions):
     num_portions = db_utils.get_portion_per_feeding(cursor, rfid)
-    portions_eaten = num_portions - leftovers
+    portions_eaten = num_portions - leftover_portions
+    print(f"Portions eaten: {portions_eaten}")
     db_utils.increment_portions_eaten_history(cursor, rfid, portions_eaten)
+    print("Portions eaten history updated.")
 
 if __name__ == "__main__":
     try:
         hx = weight_util.init_weight_sensor()
-        with db_utils.mysql_connection() as db_cursor:
+        with db_utils.mysql_connection() as connection:
+            cursor = connection.cursor()
             print("This program dispenses food if an RFID tag is detected and the tag is in our database")
             occupied = False
-            leftover = 0
             previous_leftovers_portions = 0
-            calculated_weight = 0
             while True:
                 print("Waiting for RFID...")
                 rfid, rfid_text = rfid_utils.read_rfid()
@@ -60,14 +67,18 @@ if __name__ == "__main__":
                 if not occupied:
                     print("Feeder is not occupied. Handling pet arrival.")
                     previous_leftovers_grams = weight_util.get_weight(hx)
-                    previous_leftovers_portions = weight_util.grams_to_portions(previous_leftovers_grams) // 1
-                    handle_rfid_occupied(db_cursor, rfid, previous_leftovers_portions)
+                    # previous_leftovers_portions = weight_util.grams_to_portions(previous_leftovers_grams) // 1
+                    previous_leftovers_portions = weight_util.grams_to_portions(round(previous_leftovers_grams))
+                    handle_rfid_occupied(cursor, rfid, previous_leftovers_portions)
+                    connection.commit()
                     occupied = True
-                elif occupied:
+                else:
                     print("Feeder is occupied. Handling pet departure.")
                     leftover_grams = weight_util.get_weight(hx)
-                    leftover_portions = weight_util.grams_to_portions(leftover_grams) // 1
-                    handle_rfid_not_occupied(db_cursor, rfid, previous_leftovers_portions, leftover_portions)
+                    # leftover_portions = weight_util.grams_to_portions(leftover_grams) // 1
+                    leftover_portions = weight_util.grams_to_portions(round(leftover_grams))
+                    handle_rfid_not_occupied(cursor, rfid, previous_leftovers_portions, leftover_portions)
+                    connection.commit()
                     occupied = False
 
                 time.sleep(1)
@@ -77,4 +88,4 @@ if __name__ == "__main__":
     except Exception as e:
         weight_util.cleanup()
         print("An unexpected error occurred:")
-        raise  # 重新抛出异常，显示完整的堆栈跟踪
+        raise
