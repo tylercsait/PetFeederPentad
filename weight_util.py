@@ -8,6 +8,7 @@ GPIO.setwarnings(False)
 
 # Initialize HX711
 def init_weight_sensor():
+    GPIO.setmode(GPIO.BCM)
     hx = HX711(dout=24, pd_sck=23)
     hx.set_reading_format("MSB", "MSB")
     hx.set_reference_unit(386)
