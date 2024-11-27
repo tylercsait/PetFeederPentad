@@ -12,6 +12,9 @@ def read_rfid():
             # Once an RFID is read, return the values
             return rfid, rfid_text
     finally:
-        # 不要在这里调用 GPIO.cleanup()
-        # 如果需要，可以释放与 RFID 相关的资源
-        pass  # 或者调用 reader.GPIO_CLEENUP()，如果该方法仅清除 RFID 相关的 GPIO
+        GPIO.cleanup()
+
+if __name__ == "__main__":
+    rfid, rfid_text = read_rfid()
+    print(f"RFID: {rfid}")
+    print(f"Text: {rfid_text}")
