@@ -101,7 +101,7 @@ def get_last_time_fed(cursor, rfid, the_date):
 def get_feedings_today(cursor, rfid):
     return get_column_value_for_date(cursor, "history", "feedings_today", rfid, TODAY)
 
-def get_portions_eaten_today(cursor, rfid, the_date):
+def get_portions_eaten(cursor, rfid, the_date):
     return get_column_value_for_date(cursor, "history", "portions_eaten_today", rfid, the_date)
 
 def get_leftover_portions(cursor, rfid, the_date):
@@ -208,7 +208,7 @@ def increment_feeding_history(cursor, rfid):
 
 
 def increment_portions_eaten_history(cursor, rfid, portions_eaten):
-    portions = get_portions_eaten_today(cursor, rfid)
+    portions = get_portions_eaten(cursor, rfid, TODAY)
     update_history_portions_eaten_today(cursor, rfid, portions+portions_eaten)
 
 def list_all_pets(cursor):
