@@ -3,6 +3,7 @@ Pet Feeder Main File
 Collaborators: Tsz Hei Chan, Ronghao Liu, Tyler Chow, Hung-Ju Ke, Nabil Mekhalfa
 Last Modified: 11/17/2024
 """
+from mysql.connector.aio import MySQLConnection
 
 import weight_util
 import mysql.connector
@@ -46,8 +47,8 @@ def handle_rfid_not_occupied(cursor, rfid, previous_leftovers, leftovers):
 
 if __name__ == "__main__":
     hx = weight_util.init_weight_sensor()
-    with db_utils.mysql_connection() as db_cursor:
-        connection = db_cursor.mysql_connection()
+    connection : MySQLConnection = db_utils.mysql_connection()
+    with connection.cursor() as db_cursor:
         print("This program dispenses food if an RFID tag is detected and the tag is in our database")
         try:
             occupied = False
