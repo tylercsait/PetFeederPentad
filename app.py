@@ -17,7 +17,7 @@ def index():
 # Route for viewing all registered pets
 @app.route('/view-pets')
 def view_pets():
-    with db_utils.mysql_connection() as cursor:
+    with db_utils.mysql_connection() as (cursor, connection):
         cursor.execute("SELECT rfid, rfid_text, max_feedings_day, max_portions_day, portions_per_feeding FROM pets")
         pets = cursor.fetchall()
         pets = [dict(rfid=row[0], rfid_text=row[1], max_feedings_day=row[2], max_portions_day=row[3], portions_per_feeding=row[4]) for row in pets]
@@ -26,7 +26,7 @@ def view_pets():
 
 @app.route('/view-history/<rfid>')
 def view_history(rfid):
-    with db_utils.mysql_connection() as cursor:
+    with db_utils.mysql_connection() as (cursor, connection):
         cursor.execute(
             "SELECT date, last_time_fed, feedings_today, portions_eaten_today, leftover_portions FROM history WHERE rfid = %s",
             (rfid,))
@@ -58,7 +58,7 @@ def api_pets():
     portions_per_feeding = int(data['portions_per_feeding'])
     max_portions_day = max_feedings_day * portions_per_feeding
 
-    with db_utils.mysql_connection() as cursor:
+    with db_utils.mysql_connection() as (cursor, connection):
         if not db_utils.check_pet_exists(cursor, rfid, "pets"):
             db_utils.add_pet(cursor, rfid, rfid_text, max_feedings_day, max_portions_day, portions_per_feeding)
         else:
