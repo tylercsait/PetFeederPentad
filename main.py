@@ -66,7 +66,7 @@ if __name__ == "__main__":
                     occupied = True
                 elif occupied:
                     leftover_grams = weight_util.get_weight(hx)
-                    leftover_portions = weight_util.GRAMS_PER_PORTION(leftover_grams) // 1
+                    leftover_portions = weight_util.grams_to_portions(leftover_grams) // 1
                     handle_rfid_not_occupied(db_cursor, rfid, previous_leftovers_portions, leftover_portions)
                     db_connection.commit()
                     occupied = False
