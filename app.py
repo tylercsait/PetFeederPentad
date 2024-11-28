@@ -23,16 +23,26 @@ def view_pets():
         pets = [dict(rfid=row[0], rfid_text=row[1], max_feedings_day=row[2], max_portions_day=row[3], portions_per_feeding=row[4]) for row in pets]
     return render_template('view_pets.html', pets=pets)
 
-# Route for viewing history of a pet by RFID
+
 @app.route('/view-history/<rfid>')
 def view_history(rfid):
     with db_utils.mysql_connection() as cursor:
-        cursor.execute("SELECT date, last_time_fed, feedings_today, portions_eaten_today, leftover_portions FROM history WHERE rfid = %s", (rfid,))
+        cursor.execute(
+            "SELECT date, last_time_fed, feedings_today, portions_eaten_today, leftover_portions FROM history WHERE rfid = %s",
+            (rfid,))
         history = cursor.fetchall()
-        history = [dict(date=row[0], last_time_fed=row[1], feedings_today=row[2], portions_eaten_today=row[3], leftover_portions=row[4]) for row in history]
+        history = [dict(date=row[0], last_time_fed=row[1], feedings_today=row[2], portions_eaten_today=row[3],
+                        leftover_portions=row[4]) for row in history]
+
+        cursor.execute("SELECT rfid_text FROM pets WHERE rfid = %s", (rfid,))
+        pet_name_row = cursor.fetchone()
+        pet_name = pet_name_row[0] if pet_name_row else "Unknown Pet"
+
     last_time_fed = history[-1]['last_time_fed'] if history else "N/A"
     date = history[-1]['date'] if history else "N/A"
-    return render_template('view_history.html', rfid=rfid, history=history,last_time_fed=last_time_fed, date=date)
+    return render_template('view_history.html', rfid=rfid, history=history, last_time_fed=last_time_fed, date=date,
+                           pet_name=pet_name)
+
 
 # Route for another page
 @app.route('/another-page')
