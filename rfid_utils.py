@@ -9,10 +9,9 @@ def read_rfid():
         print("Please place the RFID tag near the sensor.")
         while True:
             rfid, rfid_text = reader.read()
-            # Once an RFID is read, return the values
             return rfid, rfid_text
     finally:
-        GPIO.cleanup()
+        pass  # No GPIO.cleanup() here
 
 if __name__ == "__main__":
     rfid, rfid_text = read_rfid()

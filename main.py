@@ -14,6 +14,9 @@ import weight_util
 import camera
 import fileupload
 
+API_URL = "http://192.168.1.200:8123/api/services/number/set_value"
+
+
 
 def handle_rfid_occupied(cursor, rfid, previous_leftover_portions):
     if db_utils.eligible_to_feed(cursor, rfid):
@@ -74,3 +77,7 @@ if __name__ == "__main__":
         except KeyboardInterrupt:
             weight_util.cleanup()
             print("Program interrupted by user. Exiting.")
+        except Exception as e:
+            weight_util.cleanup()
+            print("Program interrupted by user. Exiting.")
+            raise
