@@ -62,13 +62,13 @@ if __name__ == "__main__":
                     previous_leftovers_grams = weight_util.get_weight(hx)
                     previous_leftovers_portions = weight_util.grams_to_portions(previous_leftovers_grams) // 1
                     handle_rfid_occupied(db_cursor, rfid, previous_leftovers_portions)
-                    db_cursor.connection.commit()
+                    # db_cursor.connection.commit()
                     occupied = True
                 elif occupied:
                     leftover_grams = weight_util.get_weight(hx)
                     leftover_portions = weight_util.GRAMS_PER_PORTION(leftover_grams) // 1
                     handle_rfid_not_occupied(db_cursor, rfid, previous_leftovers_portions, leftover_portions)
-                    db_cursor.connection.commit()
+                    # db_cursor.connection.commit()
                     occupied = False
                 #     when leaving, I want to calculate the amount eaten and update the history
 
