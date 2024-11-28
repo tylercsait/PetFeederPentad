@@ -47,6 +47,7 @@ def handle_rfid_not_occupied(cursor, rfid, previous_leftovers, leftovers):
 if __name__ == "__main__":
     hx = weight_util.init_weight_sensor()
     with db_utils.mysql_connection() as db_cursor:
+        connection = db_cursor.mysql_connection()
         print("This program dispenses food if an RFID tag is detected and the tag is in our database")
         try:
             occupied = False
@@ -62,13 +63,13 @@ if __name__ == "__main__":
                     previous_leftovers_grams = weight_util.get_weight(hx)
                     previous_leftovers_portions = weight_util.grams_to_portions(previous_leftovers_grams) // 1
                     handle_rfid_occupied(db_cursor, rfid, previous_leftovers_portions)
-                    # db_cursor.connection.commit()
+                    connection.commit()
                     occupied = True
                 elif occupied:
                     leftover_grams = weight_util.get_weight(hx)
                     leftover_portions = weight_util.GRAMS_PER_PORTION(leftover_grams) // 1
                     handle_rfid_not_occupied(db_cursor, rfid, previous_leftovers_portions, leftover_portions)
-                    # db_cursor.connection.commit()
+                    connection.commit()
                     occupied = False
                 #     when leaving, I want to calculate the amount eaten and update the history
 
