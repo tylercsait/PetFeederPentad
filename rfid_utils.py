@@ -1,4 +1,6 @@
 import RPi.GPIO as GPIO
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
 from mfrc522 import SimpleMFRC522
 
 def read_rfid():

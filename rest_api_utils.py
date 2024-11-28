@@ -1,8 +1,12 @@
 import requests
 
 def get_connection_str(file_path):
-    with open(file_path, 'r') as file:
-        return file.read().strip()
+    try:
+        with open(file_path, 'r') as file:
+            return file.read().strip()
+    except FileNotFoundError:
+        print(f"Token file not found at {file_path}.")
+        return None
 
 def set_url(new_url):
     return new_url
@@ -42,14 +46,17 @@ def view_response(response):
 
 # Home Assistant API URL
 # url = "http://137.186.88.102:53218/api/services/number/set_value"
-url = "http://192.168.66.200:8123/api/services/number/set_value"
+url = "http://192.168.1.200:8123/api/services/number/set_value"
 entity_id = "number.smart_pet_feeder_feed"
 token = get_connection_str("token.txt")
-bportion_size = 4
+
 
 # Example usage
 if __name__ == "__main__":
-    response = dispense_portions(bportion_size)
+    portion_size = 4
+    response = dispense_portions(portion_size)
     if response:
-        print("if response")
+        print("Dispense request completed.")
         view_response(response)
+    else:
+        print("Failed to send dispense request.")
