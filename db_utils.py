@@ -31,7 +31,7 @@ def mysql_connection():
         connection = mysql.connector.connect(**config)
         print("Connection established")
         cursor = connection.cursor(buffered=True)  # Use a buffered cursor
-        yield cursor
+        yield cursor, connection
         connection.commit()
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
