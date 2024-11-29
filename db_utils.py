@@ -223,8 +223,11 @@ def view_table(cursor, db_name):
 
 def delete_pet_by_rfid(cursor, rfid):
     delete_query = "DELETE FROM pets WHERE rfid = %s"
+    cursor.execute(delete_query, ( rfid,))
+    print("Deleted", cursor.rowcount, "row(s) from pets.")
+    delete_query = "DELETE FROM history WHERE rfid = %s"
     cursor.execute(delete_query, (rfid,))
-    print("Deleted", cursor.rowcount, "row(s).")
+    print("Deleted", cursor.rowcount, "row(s) from history.")
 
 
 def create_file_name(cursor, rfid):

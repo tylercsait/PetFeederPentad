@@ -23,6 +23,12 @@ def view_pets():
         pets = [dict(rfid=row[0], rfid_text=row[1], max_feedings_day=row[2], max_portions_day=row[3], portions_per_feeding=row[4]) for row in pets]
     return render_template('view_pets.html', pets=pets)
 
+@app.route('/delete-pet/<rfid>', methods=['POST'])
+def delete_pet(rfid):
+    with db_utils.mysql_connection() as (cursor, connection):
+        db_utils.delete_pet_by_rfid(cursor,rfid)
+        connection.commit()
+    return redirect(url_for('view_pets'))
 
 @app.route('/view-history/<rfid>')
 def view_history(rfid):
