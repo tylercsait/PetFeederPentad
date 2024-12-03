@@ -46,7 +46,8 @@ def view_response(response):
 
 # Home Assistant API URL
 # url = "http://137.186.88.102:53218/api/services/number/set_value"
-url = "http://192.168.1.200:8123/api/services/number/set_value"
+# url = "http://192.168.1.200:8123/api/services/number/set_value"
+url = "http://192.168.66.200:8123/api/services/number/set_value"
 entity_id = "number.smart_pet_feeder_feed"
 token = get_connection_str("token.txt")
 

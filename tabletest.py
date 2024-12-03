@@ -34,13 +34,15 @@ def simulate_dispense_food(cursor, rfid):#Dispense food if history is empty
 
 
 if __name__ == "__main__":
-    rfid = "1223334444"
-    rfid_text = "Jason"
-    with db_utils.mysql_connection() as db_cursor:
+    rfid = "c"
+    rfid_text = "Chris"
+    with db_utils.mysql_connection() as (db_cursor, db_connection):
         # db_utils.initialize_tables(db_cursor)
-        simulate_dispense_food(db_cursor, rfid)
-        fileupload.upload_jpg_blob("C:\\users\\Tyler\\Desktop\\c.jpg",db_utils.create_file_name(db_cursor, rfid))
+        # simulate_dispense_food(db_cursor, rfid)
+        # fileupload.upload_jpg_blob("C:\\users\\Tyler\\Desktop\\test.jpg",db_utils.create_file_name(db_cursor, rfid))
         # print(db_utils.create_file_name(db_cursor, "a"))
+        # db_utils.add_pet(db_cursor,rfid, rfid_text, 1,1,1)
+        db_utils.delete_pet_by_rfid(db_cursor,rfid)
         db_utils.view_table(db_cursor, "pets")
         db_utils.view_table(db_cursor, "history")
 
