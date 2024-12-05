@@ -26,7 +26,8 @@ def handle_rfid_occupied(cursor, rfid, previous_leftover_portions):
         num_portions = db_utils.get_portion_per_feeding(cursor, rfid)
         # round down leftover portions
         print("1")
-        rest_api_utils.dispense_portions(num_portions - previous_leftover_portions)
+        if num_portions - previous_leftover_portions > 0:
+            rest_api_utils.dispense_portions(num_portions - previous_leftover_portions)
         print("2")
         db_utils.increment_feeding_history(cursor, rfid)
         print("3")
