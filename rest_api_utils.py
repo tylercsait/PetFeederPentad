@@ -55,18 +55,21 @@ def dispense_portions(portion_size):
         print("Feeding is currently active. Waiting...")
         time.sleep(1)
 
-    try:
-        response = requests.post(url, headers=headers, json=data)
-        if response.status_code == 200:
-            print("Connectivity test successful! Home Assistant is accessible.")
-            print(f"Dispensing {portion_size} portions.")
-        else:
-            print(f"Error: {response.status_code} - {response.text}")
-        return response
-    except requests.exceptions.RequestException as e:
-        print(f"Connection error: {e}")
-        return None
-
+    with requests.Session() as session:
+        try:
+            print(f"Sending request to {url} with data: {data}")
+            response = session.post(url, headers=headers, json=data)
+            print(f"Received response: {response.status_code} - {response.text}")
+            if response.status_code == 200:
+                print("Connectivity test successful! Home Assistant is accessible.")
+                print(f"Dispensing {portion_size} portions.")
+            else:
+                print(f"Error: {response.status_code} - {response.text}")
+                print(f"Response Content: {response.content}")
+            return response
+        except requests.exceptions.RequestException as e:
+            print(f"Connection error: {e}")
+            return None
 
 def view_response(response):
     print(f"URL: {response.url}")
