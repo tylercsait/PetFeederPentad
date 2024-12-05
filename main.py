@@ -24,6 +24,9 @@ def handle_rfid_occupied(cursor, rfid, previous_leftover_portions):
         num_portions = db_utils.get_portion_per_feeding(cursor, rfid)
         print(f"Num portions: {num_portions}, Previous leftover portions: {previous_leftover_portions}")
 
+        # Ensure previous_leftover_portions is non-negative
+        previous_leftover_portions = max(previous_leftover_portions, 0)
+
         # Calculate the portions to dispense
         portions_to_dispense = num_portions - previous_leftover_portions
         print(f"Calculated portions to dispense: {portions_to_dispense}")
@@ -46,14 +49,16 @@ def handle_rfid_occupied(cursor, rfid, previous_leftover_portions):
     else:
         print("Pet is not eligible. Not feeding")
 
-
 def handle_rfid_not_occupied(cursor, rfid, previous_leftovers, leftovers):
     num_portions = db_utils.get_portion_per_feeding(cursor, rfid)
     portions_eaten = num_portions - leftovers
     print(f"Previous leftovers: {previous_leftovers}, Leftovers: {leftovers}, Portions eaten: {portions_eaten}")
+
+    # Ensure leftovers are non-negative
+    leftovers = max(leftovers, 0)
+
     db_utils.increment_portions_eaten_history(cursor, rfid, portions_eaten)
     print("Portions eaten history updated.")
-
 
 if __name__ == "__main__":
     hx = weight_util.init_weight_sensor()
@@ -70,8 +75,8 @@ if __name__ == "__main__":
                 if not occupied:
                     previous_leftovers_grams = weight_util.get_weight(hx)
                     previous_leftovers_portions = weight_util.grams_to_portions(previous_leftovers_grams) // 1
-                    print(
-                        f"Previous leftovers (grams): {previous_leftovers_grams}, Previous leftovers (portions): {previous_leftovers_portions}")
+                    previous_leftovers_portions = max(previous_leftovers_portions, 0)
+                    print(f"Previous leftovers (grams): {previous_leftovers_grams}, Previous leftovers (portions): {previous_leftovers_portions}")
                     handle_rfid_occupied(db_cursor, rfid, previous_leftovers_portions)
                     db_connection.commit()
                     occupied = True
@@ -79,6 +84,7 @@ if __name__ == "__main__":
                 elif occupied:
                     leftover_grams = weight_util.get_weight(hx)
                     leftover_portions = weight_util.grams_to_portions(leftover_grams) // 1
+                    leftover_portions = max(leftover_portions, 0)
                     print(f"Leftover (grams): {leftover_grams}, Leftover (portions): {leftover_portions}")
                     handle_rfid_not_occupied(db_cursor, rfid, previous_leftovers_portions, leftover_portions)
                     db_connection.commit()
