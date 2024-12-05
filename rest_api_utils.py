@@ -35,6 +35,7 @@ def dispense_portions(portion_size):
         response = requests.post(url, headers=headers, json=data)
         if response.status_code == 200:
             print("Connectivity test successful! Home Assistant is accessible.")
+            print(f"Dispensing {portion_size} portions.")
         else:
             print(f"Error: {response.status_code} - {response.text}")
         return response
@@ -55,12 +56,12 @@ entity_id = "number.smart_pet_feeder_feed"
 token = get_connection_str("token.txt")
 
 
-# Example usage
-if __name__ == "__main__":
-    portion_size = 4
-    response = dispense_portions(portion_size)
-    if response:
-        print("Dispense request completed.")
-        view_response(response)
-    else:
-        print("Failed to send dispense request.")
+# # Example usage
+# if __name__ == "__main__":
+#     portion_size = 4
+#     response = dispense_portions(portion_size)
+#     if response:
+#         print("Dispense request completed.")
+#         view_response(response)
+#     else:
+#         print("Failed to send dispense request.")
