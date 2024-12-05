@@ -185,8 +185,11 @@ def update_history_leftover_portions(cursor, rfid, the_date, new_leftover_portio
     update_history_value(cursor, rfid, the_date, "leftover_portions", new_leftover_portions)
 
 def eligible_to_feed(cursor, rfid):
-    if not check_pet_exists(cursor, rfid, "history"):
-        return True  # No history implies pet can be fed
+    if (not check_pet_exists(cursor, rfid, "history")) and check_pet_exists(cursor, rfid, "pets"):
+        return True # The pet is registered and has no history, we can feed it
+    elif not check_pet_exists(cursor, rfid, "pets"):
+        print("Pet is not registered, we cannot dispense food.")
+        return False
     max_meals = get_max_feedings_day(cursor, rfid) or 0
     meals_today = get_feedings_today(cursor, rfid) or 0
     return meals_today < max_meals
