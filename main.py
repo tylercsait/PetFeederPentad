@@ -14,8 +14,8 @@ import weight_util
 import camera
 import fileupload
 
-# API_URL = "http://192.168.1.200:8123/api/services/number/set_value"
-API_URL = "http://192.168.66.200:8123/api/services/number/set_value"
+REST_URL = "http://192.168.1.200:8123/api/services/number/set_value"
+# REST_URL = "http://192.168.66.200:8123/api/services/number/set_value"
 
 
 
