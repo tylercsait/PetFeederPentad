@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/web_styles.css') }}">
+    <style>
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80vh;
+            padding-top: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .team-members {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .team-member {
+            flex: 1;
+            margin: 10px;
+            height: 200px; /* Set a fixed height for alignment */
+        }
+        .team-member img {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('register') }}">Register a Pet</a>
+        <a href="{{ url_for('view_pets') }}">View All Registered Pets</a>
+        <a href="{{ url_for('contact') }}">Contact Us</a>
+    </nav>
+    <header>
+        <h1>Contact Us</h1>
+    </header>
+    <main>
+        <section class="container">
+            <h2>Meet Our Team</h2>
+            <div class="team-members">
+                <!-- Team Member 1 -->
+                <div class="team-member">
+                    <h3>Team Member 1</h3>
+                    <img src="{{ url_for('static', filename='images/linkedin.png') }}" alt="LinkedIn">
+                    <br>
+                    <a href=""></a>
+                </div>
+                <!-- Team Member 2 -->
+                <div class="team-member">
+                    <h3>Team Member 2</h3>
+                    <img src="{{ url_for('static', filename='images/linkedin.png') }}" alt="LinkedIn">
+                    <br>
+                    <a href=""></a>
+                </div>
+                <!-- Team Member 3 -->
+                <div class="team-member">
+                    <h3>Tyler Chow</h3>
+                    <a href="https://www.linkedin.com/in/tyler-chow-4260162a2/" target="_blank">
+                        <img src="{{ url_for('static', filename='images/linkedin.png') }}" alt="LinkedIn">
+                    </a>
+                    <br>
+                    <a href="https://www.linkedin.com/in/tyler-chow-4260162a2/" target="_blank">
+                        Connect with Tyler Chow
+                    </a>
+                </div>
+                <!-- Team Member 4 -->
+                <div class="team-member">
+                    <h3>Team Member 4</h3>
+                    <img src="{{ url_for('static', filename='images/linkedin.png') }}" alt="LinkedIn">
+                    <br>
+                    <a href=""></a>
+                </div>
+                <!-- Team Member 5 -->
+                <div class="team-member">
+                    <h3>Team Member 5</h3>
+                    <img src="{{ url_for('static', filename='images/linkedin.png') }}" alt="LinkedIn">
+                    <br>
+                    <a href=""></a>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
