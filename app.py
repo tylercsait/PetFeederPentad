@@ -72,5 +72,10 @@ def api_pets():
 
     return jsonify({"message": "Pet information submitted successfully!"})
 
+# Route for the Contact Us page
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
